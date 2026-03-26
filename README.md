@@ -1,6 +1,6 @@
 # d7049e_project
 
-A Java-based virtual interactive environment (VIE) engine for fixed-room dungeon-style scenes with a focus on ECS architecture and performance.
+A virtual interactive environment (VIE) engine for fixed-room dungeon-style scenes with a focus on ECS architecture and performance.
 
 ## Project Idea (VIE Concept)
 
