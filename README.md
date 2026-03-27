@@ -103,6 +103,19 @@ The goal is to explore how scripting and ECS can work together to create flexibl
 
 ---
 
+## Code Style
+
+- Java naming conventions (PascalCase for classes, camelCase for methods/variables)
+- Components contain only data (no logic)
+- Systems contain logic
+- Clear separation between engine and demo code
+
+---
+
+## License
+
+This project uses the MIT License.
+
 ## Project Structure
 
 ```text
@@ -113,3 +126,4 @@ src/
 assets/      -> test assets
 tests/       -> testing code
 tools/       -> scripts and utilities
+text´´´
