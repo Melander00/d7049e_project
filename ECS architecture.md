@@ -1,125 +1,79 @@
-## ECS Model
-- entities are IDs
-- components are data-only
-- systems operate on component combinations
+ECS Overview
 
-## ECS diagram
+Entities are unique IDs.
+Components store data.
+Systems process entities with matching component sets.
 
-<img width="637" height="396" alt="image" src="https://github.com/user-attachments/assets/65173d99-85c6-4221-97da-15dc6ef48625" />
+--------------------------------------------------
 
-### Transform
-Purpose: stores where the entity is in the world.
-Typical data:
-x, y
-rotation
-scale
+| Component  | Player | Enemy | Projectile | Barrel |
+|------------|--------|-------|------------|--------|
+| Transform  | ✓      | ✓     | ✓          | ✓      |
+| Render     | ✓      | ✓     | ✓          | ✓      |
+| Physics    | ✓      | ✓     | ✓          | ✓      |
+| Velocity   | ✓      | ✓     | ✓          | -      |
+| Collider   | ✓      | ✓     | ✓          | ✓      |
+| Script     | -      | ✓     | -          | ✓      |
+| Agent      | -      | ✓     | -          | -      |
 
-### Render
-Purpose: stores what should be drawn.
+--------------------------------------------------
 
-Typical data:
+### Core Components
 
-sprite/texture ID
-visible flag
-render layer
-maybe flip state
+#### TransformComponent
+- position (x, y, z)
+- rotation
+- scale
 
-### Velocity
-Purpose: stores movement direction and speed.
+#### RenderComponent
+- model reference
+- material / texture
+- visibility flag
 
-Typical data:
+#### PhysicsComponent
+- rigid body reference (Bullet)
+- mass
+- gravity flag
 
-vx, vy
+#### VelocityComponent
+- velocity vector
 
-### Collider
+#### ColliderComponent
+- collision shape
+- trigger flag
 
-Purpose: stores collision or overlap shape.
+#### ScriptComponent
+- script reference (Lua or identifier)
 
-Typical data:
+#### AgentComponent
+- behavior type
+- state 
 
-width/height or radius
-offset
-solid vs trigger
-collision mask/layer
+--------------------------------------------------
 
-### Script
+### Core Systems
 
-Purpose: attaches custom scripted behavior to an entity.
+#### MovementSystem
+- updates position using velocity
 
-Typical data:
+#### PhysicsSystem
+- synchronizes ECS with Bullet Physics
+- applies forces and gravity
 
-script name / file
-script parameters
-state variables reference
+#### CollisionSystem
+- detects collisions
+- triggers responses
 
-### Agent
+#### RenderSystem
+- reads Transform and Render components
+- submits data to LibGDX renderer
 
-Purpose: stores data for autonomous behavior.
+#### ScriptSystem
+- executes scripts
+- handles behaviors and events
 
-Typical data:
+#### AgentSystem
+- controls enemy behavior
 
-AI state
-target position
-patrol index
-behavior type
-
-### Animation
-
-Purpose: stores sprite animation state.
-
-Typical data:
-
-current animation
-current frame
-elapsed time
-loop flag
-
-### Tag
-
-Purpose: provides a lightweight label or category for an entity.
-
-Typical data:
-
-"player"
-"wall"
-"npc"
-"trigger"
-"projectile"
-
-### Lifetime
-
-Purpose: stores how long an entity should exist.
-
-Typical data:
-
-remainingTime
-
-### Health
-
-Purpose: stores hit points or durability.
-
-Typical data:
-
-current HP
-max HP
-invulnerability timer maybe
-
-### Damage
-
-Purpose: stores how much damage an entity can deal.
-
-Typical data:
-
-damage amount
-source entity
-damage type maybe
-
-
-## ECS should not be used here:
-
-- LibGDX app bootstrap
-- asset loading
-- camera setup
-- global config
-- game loop orchestration
-- renderer backend integration
+#### ProfilingSystem
+- measures update time per system
