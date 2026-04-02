@@ -16,7 +16,7 @@ The engine is optimized for mobile 3d army controller shooter.
 
 3. Core scenario ✅
 
-You control a single soldier that have to shoot enemies to earn cash so he can expand his army and kill more enemies.
+You control a single soldier that have to shoot enemies and barrels so he can expand his army and kill more enemies.
 <img width="960" height="540" alt="D7049E STORYBOARD" src="https://github.com/user-attachments/assets/5c777c48-8397-4c73-82d4-277699bb5009" />
 
 
