@@ -1,4 +1,4 @@
-ECS Overview
+## ECS Overview
 
 Entities are unique IDs.
 Components store data.
