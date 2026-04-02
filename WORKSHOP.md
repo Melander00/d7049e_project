@@ -69,7 +69,10 @@ You control a single soldier that have to shoot enemies and barrels so he can ex
 9. Engineering rules ✅
 
 License: MIT
+
 Code style: see document
+
 Folder structure: TBD
+
 Branch / commit convention:
 Once structure has been defined and template code setup: Branch into `feat/` or `fix/` -> Create pull request -> Wait for PR review -> Merge into main -> Delete branch. Commit often, small commits -> easier reviews. Create small pull requests. No 100K changes reviews.
