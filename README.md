@@ -1,129 +1,220 @@
-# d7049e_project 
+# brain-slop game engine
 
-A Java-based virtual interactive environment (VIE) engine for fixed-room 2D dungeon-style scenes, with a focus on ECS architecture, layered rendering/grouping, and performance.
+A Java-based virtual interactive environment (VIE) engine for building fast-paced, replayable **3D mobile games**, with a focus on ECS architecture, physics simulation, and performance.
 
 ---
 
 ## Course Context
 
-This project is developed for the course D7049E - Virtual Interactive Environments.
+This project is developed for the course **D7049E - Virtual Interactive Environments**.
 
-The focus of the course is on designing and implementing the underlying technology of interactive environments, rather than building a complete or polished game.
+The focus of the course is on designing and implementing the underlying technology of interactive environments, particularly:
 
----
-
-## Project Idea (VIE Concept)
-
-We are building a lightweight 2D game engine for creating fixed-room dungeon environments inspired by games such as Binding of Isaac and Undertale.
-
-The environment:
-- uses a fixed-size room (canvas)
-- supports **layered scene composition** (e.g. floor, walls, entities, projectiles, effects)
-- supports **layered rendering and entity grouping** for controlling draw order and interaction separation
-- allows users to define behavior through **scripts**
-- contains autonomous agents that interact with the player
-- allows dynamic and configurable object counts
-
-The demo/game itself is minimal and only used to validate engine functionality.
+* 3D worlds
+* simulation systems
+* component-based architectures
 
 ---
 
-## Problem Statement
+## Team
 
-Many small-scale game projects suffer from tightly coupled logic, inconsistent asset usage, and difficulty organizing multiple interacting elements (e.g. movement, effects, collisions, projectiles).
+* Samuel Melander — Chief Observer 🗿
+* Irma Palo Hjärtström — Code Monkey 🐒
 
-This project explores a structured engine approach where:
-- logic is separated using ECS
-- entities are organized using layers for clear rendering and grouping
-- behaviors can be composed through systems and scripting
-- runtime behavior can be modified without changing core engine code
+Repository: https://github.com/Melander00/d7049e_project
+
+---
+
+## Engine Vision
+
+This engine is designed for building **quick, replayable mobile games** with short, intense gameplay loops.
+
+Players:
+
+* continuously acquire upgrades
+* make fast decisions between competing options
+* experience visible power scaling in real time
+
+The engine emphasizes:
+
+* clarity of feedback
+* scalability of entities
+* rapid iteration of game concepts
+
+The goal is to enable fast production of multiple similar games using reusable systems.
+
+---
+
+## Target Platform
+
+* Platform: Mobile
+* Audience: Ages 8–14
+* Tags: Singleplayer, Offline, Fast-paced, Infinite rounds, Microtransactions, Customization
+
+---
+
+## Target Genre / VIE
+
+The engine is optimized for a:
+
+> **3D army controller shooter**
+
+* Player controls a unit moving forward
+* Shooting enemies and objects increases army size
+* Gameplay consists of continuous scaling and decision-making
+
+---
+
+## Core Scenario
+
+* Player controls a single soldier
+* Shooting barrels or enemies provides upgrades or units
+* Army grows over time
+* Player must choose between upgrade paths
+* Failure occurs when scaling is insufficient before boss encounter
 
 ---
 
 ## Technical Focus
 
-The main focus is the engine architecture.
+The project focuses on engine architecture rather than game content.
 
 We aim to:
-- design a clean ECS (Entity Component System)
-- build a modular runtime architecture
-- support layered rendering and entity grouping
-- integrate a simple scripting system for behavior definition
-- support autonomous agents
-- handle configurable object counts
-- measure and analyze performance-critical systems
+
+* design a clean ECS (Entity Component System)
+* build a modular 3D runtime architecture
+* integrate physics simulation (collisions, projectiles, forces)
+* support autonomous agents
+* enable scripting for behavior definition (Lua)
+* support configurable and scalable entity counts
+* measure and analyze performance-critical systems
 
 ---
 
 ## MVP Scope
 
-This project is intentionally scoped as a minimal engine MVP.
-
 ### Included
-- ECS-based engine core
-- one fixed-room 2D test scene
-- layered scene composition (background, entities, projectiles, effects)
-- basic rendering using LibGDX
-- simple scripting support (behavior layer)
-- one autonomous agent behavior
-- configurable entity count for scalability testing
-- basic collision handling (library or simple implementation)
-- simulation timing and profiling support
 
-### Not Included
-- full game content
-- advanced editor tools
-- multiple levels or world systems
-- complex AI systems
-- advanced scripting language features
-- polished UI or toolchain features
+* ECS-based engine core (Ashley ECS)
+* 3D rendering using LibGDX
+* physics integration (Bullet Physics)
+* basic movement system (left/right control)
+* projectile system (shooting)
+* collision detection and response
+* simple enemy behavior (placeholder AI)
+* one playable test scene
+* configurable entity spawning (scaling test)
+* camera system
+* basic scripting support (Lua or equivalent)
+* performance profiling (simulation time)
 
 ---
 
-## Scripting
+### Not Included
 
-A core part of the project is allowing behaviors to be defined outside of core engine logic.
+* full gameplay loop
+* advanced enemy AI
+* army system (only one controllable entity initially)
+* advanced UI systems
+* content pipeline tools (model editors, etc.)
+* polished graphics or animations
 
-This includes:
-- attaching scripts to entities
-- defining behavior such as movement, interaction, or effects
-- enabling flexible composition of behaviors without modifying engine systems
+---
 
-The goal is to explore how scripting and ECS can work together to create flexible and reusable behavior systems.
+## Engine vs Game Separation
+
+### Engine (Reusable)
+
+* ECS framework (Ashley)
+* movement system
+* physics system
+* rendering system
+* scripting system
+* camera system
+* level loading
+* audio
+
+### Game (Demo)
+
+* soldier and enemy definitions
+* upgrade logic
+* level design
+* progression system
 
 ---
 
 ## Development Environment
 
-- Language: Java
-- Framework: LibGDX
-- Build tool: (TBD - Gradle recommended)
-- Physics/collision: TBD (library or simple custom solution)
-- Scripting: TBD (lightweight custom scripting or embedded solution)
+* Language: Java
+* Framework: LibGDX
+* ECS: Ashley
+* Physics: Bullet Physics
+* Audio: LibGDX
+* Build tool: Gradle
+* Scripting: Lua (planned)
 
 ---
 
-## Code Style
+## Architecture Overview
 
-- Java naming conventions (PascalCase for classes, camelCase for methods/variables)
-- Components contain only data (no logic)
-- Systems contain logic
-- Clear separation between engine and demo code
+The engine is built around an ECS architecture:
+
+* **Entities** → IDs representing objects
+* **Components** → data (Transform, Physics, Render, Script, etc.)
+* **Systems** → logic (movement, collision, rendering, scripting)
+
+Core systems include:
+
+* MovementSystem
+* PhysicsSystem
+* CollisionSystem
+* RenderSystem
+* ScriptSystem
+* AgentSystem
+* ProfilingSystem
+
+The game loop updates systems sequentially and ensures simulation remains under the required time budget.
 
 ---
 
-## License
+## Data-Driven Design
 
-This project uses the MIT License.
+The engine supports:
+
+* configuration loading
+* entity prototypes
+* scene bootstrap data
+
+This enables flexible content without modifying engine code.
+
+---
+
+## Engineering Rules
+
+* License: MIT
+* Code style:
+
+  * components = data only
+  * systems = logic
+  * clear separation of engine and demo
+* Workflow:
+
+  * feature branches (feat/*, fix/*)
+  * pull requests with review
+  * small commits, frequent integration
+
+---
 
 ## Project Structure
 
-```text
-docs/        -> design documents (vision, architecture)
+```
+docs/        -> design documents
 src/
-  engine/    -> core engine code (ECS, systems, runtime)
-  demo/      -> minimal demo used for validation
-assets/      -> test assets
+  engine/    -> core engine (ECS, systems)
+  demo/      -> test game implementation
+assets/      -> models, textures, audio
 tests/       -> testing code
-tools/       -> scripts and utilities
-text´´´
+tools/       -> scripts/utilities
+```
+
+
