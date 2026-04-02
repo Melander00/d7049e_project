@@ -8,7 +8,13 @@ Repository link: https://github.com/Melander00/d7049e_project
 
 1. Engine vision ✅
 
-We are building an engine for mobile-slop games. The type of games that people crank out fast with loads of ads. They are interesting for a couple of minutes.
+This engine is meant for building quick, replayable mobile games. Players continuously acquire upgrades, make quick decisions between competing options, and watch their power scale in real time. The system emphasizes clarity and spectacle, ensuring every choice visibly impacts combat and leads to either a decisive win or an obvious failure. Short gameplay loops and escalating difficulty make each run feel intense while encouraging immediate retries. By modularizing upgrades, enemies, and progression, the engine enables rapid production of many different games.
+
+- Target: Mobile
+
+- Age: Children aged 8-14
+
+- Tags: Singleplayer, Offline, Fast-paced, Infinite rounds, P2W, ADS, MicroTX, Customization
 
 2. Target genre/VIE ✅
 
