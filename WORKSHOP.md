@@ -36,6 +36,7 @@ You control a single soldier that have to shoot enemies and barrels so he can ex
 - Level loading
 - Event system
 - import 3d models
+- Lua Scripting
 
 5. Game-specific features ✅
 - Enemy models and stats
