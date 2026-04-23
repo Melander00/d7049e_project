@@ -10,6 +10,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":engine"))
+    implementation("com.badlogicgames.ashley:ashley:1.7.4")
     testImplementation(platform("org.junit:junit-bom:6.0.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

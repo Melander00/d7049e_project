@@ -1,17 +1,28 @@
 package editor;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    static void main() {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        IO.println(String.format("Hello and welcome!"));
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import engine.ecs.components.InputComponent;
+import engine.ecs.components.TransformComponent;
+import engine.ecs.systems.MovementSystem;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            IO.println("i = " + i);
+public class Main {
+    public static void main(String[] args) {
+        Engine engine = new Engine();
+
+        // add systems
+        engine.addSystem(new MovementSystem());
+
+        // create a test entity
+        Entity player = engine.createEntity();
+        player.add(new TransformComponent());
+        player.add(new InputComponent());
+        engine.addEntity(player);
+
+        // simulate a few frames
+        for (int i = 0; i < 5; i++) {
+            engine.update(0.016f); // ~60fps
+            System.out.println("frame " + i);
         }
     }
 }
