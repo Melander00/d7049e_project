@@ -1,9 +1,8 @@
 package com.example.brainslop.lwjgl3;
 
-import java.com.example.brainslop.core.Main;
-
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.example.brainslop.core.Main;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {
