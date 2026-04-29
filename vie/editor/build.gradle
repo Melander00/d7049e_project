@@ -1,0 +1,11 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    implementation project(":engine:core")
+}
+
+application {
+    mainClass = "com.example.brainslop.editor.Main"
+}
