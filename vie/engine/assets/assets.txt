@@ -1,1 +1,7 @@
+bin/main/.classpath
+bin/main/.project
+bin/main/.settings/org.eclipse.buildship.core.prefs
+bin/main/.settings/org.eclipse.jdt.core.prefs
+bin/main/assets.txt
+bin/main/build.gradle
 build.gradle
