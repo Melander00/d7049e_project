@@ -4,7 +4,9 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.example.brainslop.core.components.InputComponent;
 import com.example.brainslop.core.components.TransformComponent;
+import com.example.brainslop.core.systems.KeyboardInputSystem;
 import com.example.brainslop.core.systems.LogSystem;
 import com.example.brainslop.core.systems.MovementSystem;
 
@@ -16,12 +18,14 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         engine = new Engine();
+        engine.addSystem(new KeyboardInputSystem());
         engine.addSystem(new MovementSystem());
         engine.addSystem(new LogSystem());
 
         Entity entity;
         entity = new Entity();
         TransformComponent c = new TransformComponent();
+        entity.add(new InputComponent());
         entity.add(c);
         engine.addEntity(entity);
     }
