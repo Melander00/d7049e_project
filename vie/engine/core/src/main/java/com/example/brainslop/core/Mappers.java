@@ -6,6 +6,7 @@ import com.example.brainslop.core.components.CameraComponent;
 import com.example.brainslop.core.components.InputComponent;
 import com.example.brainslop.core.components.ModelComponent;
 import com.example.brainslop.core.components.TransformComponent;
+import com.example.brainslop.core.components.HealthComponent;
 
 public class Mappers {
 
@@ -13,6 +14,7 @@ public class Mappers {
     public static final ComponentMapper<ModelComponent> model = ComponentMapper.getFor(ModelComponent.class);
     public static final ComponentMapper<CameraComponent> camera = ComponentMapper.getFor(CameraComponent.class);
     public static final ComponentMapper<InputComponent> input = ComponentMapper.getFor(InputComponent.class);
+    public static final ComponentMapper<HealthComponent> health = ComponentMapper.getFor(HealthComponent.class);
 
 
 
