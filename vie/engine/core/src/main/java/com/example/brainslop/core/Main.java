@@ -11,14 +11,10 @@ import com.example.brainslop.core.components.CameraComponent;
 import com.example.brainslop.core.components.ModelComponent;
 import com.example.brainslop.core.components.InputComponent;
 import com.example.brainslop.core.components.TransformComponent;
-import com.example.brainslop.core.systems.CameraSystem;
-import com.example.brainslop.core.systems.ModelTransformSystem;
-import com.example.brainslop.core.systems.RenderSystem;
-import com.example.brainslop.core.systems.SceneSystem;
+import com.example.brainslop.core.systems.*;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 
 import java.util.List;
-import com.example.brainslop.core.systems.KeyboardInputSystem;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
@@ -43,6 +39,7 @@ public class Main extends ApplicationAdapter {
                 // LightSystem
                 // InputSystem
                 new KeyboardInputSystem(),
+                new InputMovementSystem(),
                 new CameraSystem(sceneManager),
                 new ModelTransformSystem(), // Prepare models for rendering
                 new RenderSystem(sceneManager) // Renders models
@@ -69,8 +66,8 @@ public class Main extends ApplicationAdapter {
         camComp.enabled = true;
         cam.add(camComp);
         TransformComponent t = new TransformComponent();
-        t.position.set(-3,3,0);
-        t.rotation.setEulerAngles(-90,-30,0);
+        t.position.set(0,3,-3);
+        t.rotation.setEulerAngles(180,-30,0);
         cam.add(t);
 
     }
