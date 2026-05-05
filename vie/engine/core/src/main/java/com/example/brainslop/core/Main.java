@@ -13,6 +13,7 @@ import com.example.brainslop.core.components.InputComponent;
 import com.example.brainslop.core.components.TransformComponent;
 import com.example.brainslop.core.systems.*;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
+import com.example.brainslop.core.messages.*;
 
 import java.util.List;
 
@@ -69,6 +70,14 @@ public class Main extends ApplicationAdapter {
         t.position.set(0,3,-3);
         t.rotation.setEulerAngles(180,-30,0);
         cam.add(t);
+
+        // TEMPORARY — remove after testing
+        engine.messageManager.subscribe(MessageType.DAMAGE_TAKEN, message -> {
+            DamageTaken msg = (DamageTaken) message;
+            Gdx.app.log("MessageManager", "DamageTaken: " + msg.amount + " on " + msg.target);
+        });
+
+        engine.messageManager.sendMessage(new DamageTaken(entity, 25f, cam));
 
     }
 

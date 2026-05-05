@@ -4,7 +4,9 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
+
 import com.example.brainslop.core.components.ModelComponent;
+import com.example.brainslop.core.messages.MessageManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +14,11 @@ import java.util.List;
 public class ECS extends Engine {
 
     private final List<EntitySystem> systems;
+    public final MessageManager messageManager;
 
     public ECS(List<EntitySystem> systems) {
         this.systems = systems;
+        this.messageManager = new MessageManager();
     }
 
     /**
