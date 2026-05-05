@@ -5,8 +5,8 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 
 public class PhysicsComponent implements Component {
-    public final btRigidBody rigidBody;
-    public PhysicsComponent(btRigidBody.btRigidBodyConstructionInfo info) {
-        this.rigidBody = new btRigidBody(info);
-    }
+    public btRigidBody rigidBody;
+    public float mass;
+    public btCollisionShape shape;
+    public float inertia;
 }

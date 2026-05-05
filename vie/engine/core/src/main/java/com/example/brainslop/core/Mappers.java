@@ -2,11 +2,7 @@ package com.example.brainslop.core;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.example.brainslop.core.components.CameraComponent;
-import com.example.brainslop.core.components.InputComponent;
-import com.example.brainslop.core.components.ModelComponent;
-import com.example.brainslop.core.components.TransformComponent;
-import com.example.brainslop.core.components.HealthComponent;
+import com.example.brainslop.core.components.*;
 
 public class Mappers {
 
@@ -15,6 +11,7 @@ public class Mappers {
     public static final ComponentMapper<CameraComponent> camera = ComponentMapper.getFor(CameraComponent.class);
     public static final ComponentMapper<InputComponent> input = ComponentMapper.getFor(InputComponent.class);
     public static final ComponentMapper<HealthComponent> health = ComponentMapper.getFor(HealthComponent.class);
+    public static final ComponentMapper<PhysicsComponent> physics = ComponentMapper.getFor(PhysicsComponent.class);
 
 
 

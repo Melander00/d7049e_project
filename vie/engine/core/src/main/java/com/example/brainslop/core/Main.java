@@ -6,11 +6,12 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
-import com.example.brainslop.core.components.CameraComponent;
-import com.example.brainslop.core.components.ModelComponent;
-import com.example.brainslop.core.components.InputComponent;
-import com.example.brainslop.core.components.TransformComponent;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.collision.btCylinderShape;
+import com.example.brainslop.core.components.*;
+import com.example.brainslop.core.physics.PhysicsFactory;
 import com.example.brainslop.core.systems.*;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 import com.example.brainslop.core.messages.*;
@@ -25,6 +26,8 @@ public class Main extends ApplicationAdapter {
     World world;
     ECS engine;
 
+    MessageManager messageManager;
+
     private boolean initialized = false;
 
     @Override
@@ -35,12 +38,14 @@ public class Main extends ApplicationAdapter {
         world = new World(sceneManager);
         world.setupCubeMap();
 
+        messageManager = new MessageManager();
+
         List<EntitySystem> systems = List.of(
                 new SceneSystem(sceneManager, assets), // Handles new model instances.
                 // LightSystem
-                // InputSystem
                 new KeyboardInputSystem(),
                 new InputMovementSystem(),
+                new PhysicsSystem(60, messageManager),
                 new CameraSystem(sceneManager),
                 new ModelTransformSystem(), // Prepare models for rendering
                 new RenderSystem(sceneManager) // Renders models
@@ -59,6 +64,11 @@ public class Main extends ApplicationAdapter {
         m.assetPath = "model/sahur.glb";
         entity.add(m);
 
+        btCollisionShape cylinder = new btCylinderShape(new Vector3(0.5f, 0.5f, 0.5f));
+
+        PhysicsComponent pc = PhysicsFactory.createBox(entity, 1f, cylinder);
+        entity.add(pc);
+
         Entity cam = engine.createEntity();
         CameraComponent camComp = new CameraComponent();
         camComp.camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -72,12 +82,14 @@ public class Main extends ApplicationAdapter {
         cam.add(t);
 
         // TEMPORARY — remove after testing
-        engine.messageManager.subscribe(MessageType.DAMAGE_TAKEN, message -> {
+        messageManager.subscribe(MessageType.DAMAGE_TAKEN, message -> {
             DamageTaken msg = (DamageTaken) message;
             Gdx.app.log("MessageManager", "DamageTaken: " + msg.amount + " on " + msg.target);
         });
 
-        engine.messageManager.sendMessage(new DamageTaken(entity, 25f, cam));
+        messageManager.sendMessage(new DamageTaken(entity, 25f, cam));
+
+
 
     }
 
