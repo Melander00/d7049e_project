@@ -33,5 +33,6 @@ public class PhysicsMovementSystem extends IteratingSystem {
 
         tmp.y = body.getLinearVelocity().y;
         body.setLinearVelocity(tmp);
+        body.activate();
     }
 }

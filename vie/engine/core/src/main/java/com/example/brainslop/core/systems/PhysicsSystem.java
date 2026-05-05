@@ -2,14 +2,17 @@ package com.example.brainslop.core.systems;
 
 import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
+import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.example.brainslop.core.Mappers;
 import com.example.brainslop.core.components.CollisionComponent;
@@ -51,6 +54,10 @@ public class PhysicsSystem extends EntitySystem {
         this.step = 1f / stepFrequency;
 
         this.msgManager = msgManager;
+    }
+
+    public btDynamicsWorld getWorld() {
+        return world;
     }
 
     private void setupEntity(Entity entity) {

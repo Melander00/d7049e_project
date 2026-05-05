@@ -8,9 +8,12 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.collision.btCylinderShape;
+import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.example.brainslop.core.components.*;
 import com.example.brainslop.core.physics.PhysicsFactory;
 import com.example.brainslop.core.systems.*;
@@ -28,8 +31,11 @@ public class Main extends ApplicationAdapter {
     ECS engine;
 
     MessageManager messageManager;
+    btDynamicsWorld btWorld;
 
-    private boolean initialized = false;
+    private static final boolean SHOW_COLLISION_WIREFRAMES = true;
+
+    private DebugDrawer debugDrawer;
 
     @Override
     public void create() {
@@ -41,6 +47,16 @@ public class Main extends ApplicationAdapter {
 
         messageManager = new MessageManager();
 
+
+
+        PhysicsSystem physicsSystem = new PhysicsSystem(60, messageManager);
+        btWorld = physicsSystem.getWorld();
+        debugDrawer = new DebugDrawer();
+        if(SHOW_COLLISION_WIREFRAMES) {
+            debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_DrawWireframe);
+        }
+        btWorld.setDebugDrawer(debugDrawer);
+
         List<EntitySystem> systems = List.of(
                 new SceneSystem(sceneManager, assets), // Handles new model instances.
 
@@ -49,7 +65,7 @@ public class Main extends ApplicationAdapter {
                 new InputMovementSystem(),
                 new PhysicsMovementSystem(),
 
-                new PhysicsSystem(60, messageManager),
+                physicsSystem,
 
                 new CameraSystem(sceneManager),
                 new ModelTransformSystem(), // Prepare models for rendering
@@ -103,7 +119,7 @@ public class Main extends ApplicationAdapter {
 
 
     private void addGround() {
-        btCollisionShape groundShape = new btBoxShape(new Vector3(50, 1, 50));
+        btCollisionShape groundShape = new btBoxShape(new Vector3(10, 1, 8));
 
         Entity ground = engine.createEntity();
 
@@ -147,6 +163,10 @@ public class Main extends ApplicationAdapter {
         }
 
         engine.update(Gdx.graphics.getDeltaTime());
+
+        debugDrawer.begin(sceneManager.camera);
+        btWorld.debugDrawWorld();
+        debugDrawer.end();
     }
 
     @Override
