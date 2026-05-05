@@ -37,7 +37,7 @@ public abstract class InputSystem extends IteratingSystem {
         input.action2 = readAction2();
 
         // TEMPORARY — remove after testing
-        Gdx.app.log("Input", "axisX: " + input.axisX + " axisY: " + input.axisY + " action1: " + input.action1);
+//        Gdx.app.log("Input", "axisX: " + input.axisX + " axisY: " + input.axisY + " action1: " + input.action1);
     }
 
     protected abstract float readAxisX();

@@ -8,6 +8,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.collision.btCylinderShape;
 import com.example.brainslop.core.components.*;
@@ -42,10 +43,14 @@ public class Main extends ApplicationAdapter {
 
         List<EntitySystem> systems = List.of(
                 new SceneSystem(sceneManager, assets), // Handles new model instances.
+
                 // LightSystem
                 new KeyboardInputSystem(),
                 new InputMovementSystem(),
+                new PhysicsMovementSystem(),
+
                 new PhysicsSystem(60, messageManager),
+
                 new CameraSystem(sceneManager),
                 new ModelTransformSystem(), // Prepare models for rendering
                 new RenderSystem(sceneManager) // Renders models
@@ -55,20 +60,67 @@ public class Main extends ApplicationAdapter {
         engine.loadSystems();
 
         assets.loadGLB("model/sahur.glb");
+        assets.loadGLB("model/ground.glb");
 
+
+        addPlayer();
+        addGround();
+        addCamera();
+
+
+        // TEMPORARY — remove after testing
+//        messageManager.subscribe(MessageType.DAMAGE_TAKEN, message -> {
+//            DamageTaken msg = (DamageTaken) message;
+//            Gdx.app.log("MessageManager", "DamageTaken: " + msg.amount + " on " + msg.target);
+//        });
+//
+//        messageManager.sendMessage(new DamageTaken(entity, 25f, cam));
+
+        messageManager.subscribe(MessageType.COLLISION_ENTERED, message -> {
+            System.out.println("Collision");
+        });
+
+    }
+
+    private void addPlayer() {
         Entity entity = engine.createEntity();
+
         TransformComponent c = new TransformComponent();
-        entity.add(new InputComponent());
+        c.scale.scl(10);
         entity.add(c);
+
+        entity.add(new InputComponent());
+        entity.add(new MovementComponent());
+
         ModelComponent m = new ModelComponent();
         m.assetPath = "model/sahur.glb";
         entity.add(m);
 
-        btCollisionShape cylinder = new btCylinderShape(new Vector3(0.5f, 0.5f, 0.5f));
-
+        btCollisionShape cylinder = new btCylinderShape(new Vector3(1f, 2f, 1f));
         PhysicsComponent pc = PhysicsFactory.createBox(entity, 1f, cylinder);
         entity.add(pc);
+    }
 
+
+    private void addGround() {
+        btCollisionShape groundShape = new btBoxShape(new Vector3(50, 1, 50));
+
+        Entity ground = engine.createEntity();
+
+        TransformComponent t = new TransformComponent();
+        t.position.set(0, -5, 0);
+        ground.add(t);
+
+        ModelComponent m = new ModelComponent();
+        m.assetPath = "model/ground.glb";
+        ground.add(m);
+
+        CollisionComponent c = new CollisionComponent();
+        c.shape = groundShape;
+        ground.add(c);
+    }
+
+    private void addCamera() {
         Entity cam = engine.createEntity();
         CameraComponent camComp = new CameraComponent();
         camComp.camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -77,20 +129,9 @@ public class Main extends ApplicationAdapter {
         camComp.enabled = true;
         cam.add(camComp);
         TransformComponent t = new TransformComponent();
-        t.position.set(0,3,-3);
+        t.position.set(0,9,-9);
         t.rotation.setEulerAngles(180,-30,0);
         cam.add(t);
-
-        // TEMPORARY — remove after testing
-        messageManager.subscribe(MessageType.DAMAGE_TAKEN, message -> {
-            DamageTaken msg = (DamageTaken) message;
-            Gdx.app.log("MessageManager", "DamageTaken: " + msg.amount + " on " + msg.target);
-        });
-
-        messageManager.sendMessage(new DamageTaken(entity, 25f, cam));
-
-
-
     }
 
     @Override

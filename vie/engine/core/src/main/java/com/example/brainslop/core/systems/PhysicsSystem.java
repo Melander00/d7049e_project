@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.example.brainslop.core.Mappers;
+import com.example.brainslop.core.components.CollisionComponent;
 import com.example.brainslop.core.components.PhysicsComponent;
 import com.example.brainslop.core.components.TransformComponent;
 import com.example.brainslop.core.messages.CollisionEntered;
@@ -32,6 +33,8 @@ public class PhysicsSystem extends EntitySystem {
     private final float step;
 
     private ImmutableArray<Entity> entities;
+    private ImmutableArray<Entity> collisionObjects;
+
 
     private final Matrix4 tempMatrix = new Matrix4();
     private final Vector3 tempVec = new Vector3();
@@ -54,8 +57,6 @@ public class PhysicsSystem extends EntitySystem {
         TransformComponent t = Mappers.transform.get(entity);
         PhysicsComponent p = Mappers.physics.get(entity);
 
-
-
         tempMatrix.set(t.position, t.rotation, t.scale);
 
         p.rigidBody.setWorldTransform(tempMatrix);
@@ -70,9 +71,36 @@ public class PhysicsSystem extends EntitySystem {
         this.world.removeRigidBody(p.rigidBody);
     }
 
+    private void setupStaticCollision(Entity entity) {
+        TransformComponent t = Mappers.transform.get(entity);
+        CollisionComponent c = Mappers.collision.get(entity);
+
+        tempMatrix.set(t.position, t.rotation, t.scale);
+
+        c.collisionObject = new btCollisionObject();
+        c.collisionObject.setCollisionShape(c.shape);
+        c.collisionObject.setWorldTransform(tempMatrix);
+        c.collisionObject.userData = entity;
+
+        if(c.isTrigger) {
+            c.collisionObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+        }
+
+        world.addCollisionObject(c.collisionObject);
+    }
+
+    private void removeStaticCollision(Entity entity) {
+        CollisionComponent c = Mappers.collision.get(entity);
+
+
+
+        world.removeCollisionObject(c.collisionObject);
+    }
+
     @Override
     public void addedToEngine(Engine engine) {
         entities = this.getEngine().getEntitiesFor(Family.all(PhysicsComponent.class, TransformComponent.class).get());
+        collisionObjects = this.getEngine().getEntitiesFor(Family.all(CollisionComponent.class, TransformComponent.class).get());
         getEngine().addEntityListener(
                 Family.all(PhysicsComponent.class, TransformComponent.class).get(),
                 new EntityListener() {
@@ -82,6 +110,18 @@ public class PhysicsSystem extends EntitySystem {
 
                     public void entityRemoved(Entity entity) {
                         removeEntity(entity);
+                    }
+                }
+        );
+        getEngine().addEntityListener(
+                Family.all(CollisionComponent.class, TransformComponent.class).get(),
+                new EntityListener() {
+                    public void entityAdded(Entity entity) {
+                        setupStaticCollision(entity);
+                    }
+
+                    public void entityRemoved(Entity entity) {
+                        removeStaticCollision(entity);
                     }
                 }
         );
