@@ -3,12 +3,15 @@ package com.example.brainslop.core.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.Gdx;
 import com.example.brainslop.core.ECS;
 import com.example.brainslop.core.Mappers;
 import com.example.brainslop.core.components.ScriptComponent;
 import com.example.brainslop.core.scripts.ScriptContext;
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -33,11 +36,14 @@ import java.io.IOException;
 public class ScriptSystem extends IteratingSystem {
 
     private final Globals globals;
+    private final FileHandleResolver resolver;
     private String functionToCall = "update";
 
-    public ScriptSystem() {
+//    public ScriptSystem(ECS ecs, FileHandleResolver resolver) {
+    public ScriptSystem(FileHandleResolver resolver) {
         super(Family.all(ScriptComponent.class).get());
         this.globals = JsePlatform.standardGlobals();
+        this.resolver = resolver;
 
         // This system is called manually from frame update and fixed update.
         setProcessing(false);
@@ -70,6 +76,7 @@ public class ScriptSystem extends IteratingSystem {
 
         ScriptContext context = new ScriptContext(entity, ecs);
         script.environment.set("context", CoerceJavaToLua.coerce(context));
+//        script.environment.set("dt", LuaValue.valueOf(deltaTime));
 
         callScriptFunction(script, functionToCall, deltaTime);
     }
@@ -93,21 +100,24 @@ public class ScriptSystem extends IteratingSystem {
     }
 
     private void loadScript(ScriptComponent script) {
-        try (FileReader reader = new FileReader(script.scriptPath)) {
+        try {
             LuaTable env = new LuaTable();
-
             LuaTable meta = new LuaTable();
             meta.set(LuaValue.INDEX, globals);
             env.setmetatable(meta);
 
-            LuaValue chunk = globals.load(reader, script.scriptPath, env);
-            chunk.call();
+            FileHandle scriptFile = resolver.resolve(script.scriptPath);
 
+            LuaValue chunk = globals.load(
+                    scriptFile.read(),
+                    script.scriptPath,
+                    "t",
+                    env
+            );
+            chunk.call();
             script.environment = env;
-        } catch (IOException e) {
-            Gdx.app.error("ScriptSystem", "Could not load script: " + script.scriptPath, e);
-        } catch (LuaError e) {
-            Gdx.app.error("ScriptSystem", "Lua error while loading script: " + script.scriptPath, e);
+        } catch (Exception e) {
+            Gdx.app.error("ScriptSystem", "Script not found: " + script.scriptPath + "\t| " + e);
         }
     }
 }

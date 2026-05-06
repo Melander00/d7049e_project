@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.example.brainslop.core.components.*;
 import com.example.brainslop.core.physics.PhysicsFactory;
 import com.example.brainslop.core.systems.*;
+import com.example.brainslop.core.util.ExternalAssetsResolver;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 import com.example.brainslop.core.messages.*;
 
@@ -33,8 +34,9 @@ public class Main extends ApplicationAdapter {
     ECS engine;
 
     MessageManager messageManager;
-    ScriptSystem scriptSystem;
     btDynamicsWorld btWorld;
+
+    ExternalAssetsResolver fileResolver;
 
     private static final boolean SHOW_COLLISION_WIREFRAMES = true;
 
@@ -43,7 +45,10 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         Bullet.init();
-        assets = new Assets(new AssetManager());
+
+        fileResolver = new ExternalAssetsResolver(".");
+
+        assets = new Assets(new AssetManager(fileResolver));
         sceneManager = new SceneManager();
         world = new World(sceneManager);
         world.setupCubeMap();
@@ -68,6 +73,7 @@ public class Main extends ApplicationAdapter {
                 new InputMovementSystem(),
                 new PhysicsMovementSystem(),
 
+                new ScriptSystem(fileResolver),
                 new AutoShooterSystem(),
                 physicsSystem,
                 new LifetimeSystem(),
@@ -80,33 +86,13 @@ public class Main extends ApplicationAdapter {
         engine = new ECS(systems);
         engine.loadSystems();
 
-        scriptSystem = new ScriptSystem();
-        engine.addSystem(scriptSystem);
-
         assets.loadGLB("model/sahur.glb");
         assets.loadGLB("model/ground.glb");
         assets.loadGLB("model/bullet.glb");
 
-
         addPlayer();
         addGround();
         addCamera();
-
-
-        // TEMPORARY — remove after testing
-//        messageManager.subscribe(MessageType.DAMAGE_TAKEN, message -> {
-//            DamageTaken msg = (DamageTaken) message;
-//            Gdx.app.log("MessageManager", "DamageTaken: " + msg.amount + " on " + msg.target);
-//        });
-//
-//        messageManager.sendMessage(new DamageTaken(entity, 25f, cam));
-
-        messageManager.subscribe(MessageType.COLLISION_ENTERED, message -> {
-            System.out.println("Collision");
-        });
-
-
-
     }
 
     private void addPlayer() {
@@ -136,7 +122,7 @@ public class Main extends ApplicationAdapter {
         health.currentHP = 100f;
         health.maxHP = 100f;
         entity.add(health);
-        entity.add(new ScriptComponent("vie/engine/assets/lua/test.lua"));
+        entity.add(new ScriptComponent("lua/test.lua"));
     }
 
 
@@ -187,7 +173,6 @@ public class Main extends ApplicationAdapter {
         float dt = Gdx.graphics.getDeltaTime();
 
         engine.update(dt);
-        scriptSystem.update(dt);
 
         debugDrawer.begin(sceneManager.camera);
         btWorld.debugDrawWorld();
