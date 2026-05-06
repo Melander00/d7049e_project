@@ -20,6 +20,8 @@ import com.example.brainslop.core.systems.*;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 import com.example.brainslop.core.messages.*;
 
+
+
 import java.util.List;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -74,6 +76,7 @@ public class Main extends ApplicationAdapter {
 
         engine = new ECS(systems);
         engine.loadSystems();
+        engine.addSystem(new ScriptSystem(engine));
 
         assets.loadGLB("model/sahur.glb");
         assets.loadGLB("model/ground.glb");
@@ -96,6 +99,8 @@ public class Main extends ApplicationAdapter {
             System.out.println("Collision");
         });
 
+
+
     }
 
     private void addPlayer() {
@@ -115,6 +120,12 @@ public class Main extends ApplicationAdapter {
         btCollisionShape cylinder = new btCylinderShape(new Vector3(1f, 2f, 1f));
         PhysicsComponent pc = PhysicsFactory.createBox(entity, 1f, cylinder);
         entity.add(pc);
+
+        HealthComponent health = new HealthComponent();
+        health.currentHP = 100f;
+        health.maxHP = 100f;
+        entity.add(health);
+        entity.add(new ScriptComponent("vie/engine/assets/lua/test.lua"));
     }
 
 
