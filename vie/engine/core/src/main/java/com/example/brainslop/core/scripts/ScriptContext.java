@@ -2,8 +2,10 @@ package com.example.brainslop.core.scripts;
 
 import com.badlogic.ashley.core.Entity;
 import com.example.brainslop.core.ECS;
-import com.example.brainslop.core.components.*;
+import com.example.brainslop.core.components.HealthComponent;
+import com.example.brainslop.core.components.InputComponent;
 import com.example.brainslop.core.messages.DestroyRequested;
+import com.example.brainslop.core.messages.Message;
 
 public class ScriptContext {
 
@@ -18,30 +20,12 @@ public class ScriptContext {
     public HealthComponent getHealth() {
         return ecs.getComponent(entity, HealthComponent.class);
     }
-/**
-   public GateComponent getGate() {
-        return ecs.getComponent(entity, GateComponent.class);
-    }
-
-    public PickupComponent getPickup() {
-        return ecs.getComponent(entity, PickupComponent.class);
-    }
-
-    public AgentComponent getAgent() {
-        return ecs.getComponent(entity, AgentComponent.class);
-    }
-
- **/
-
-    public PhysicsComponent getPhysics() {
-        return ecs.getComponent(entity, PhysicsComponent.class);
-    }
 
     public InputComponent getInput() {
         return ecs.getComponent(entity, InputComponent.class);
     }
 
-    public void sendMessage(com.example.brainslop.core.messages.Message message) {
+    public void sendMessage(Message message) {
         ecs.messageManager.sendMessage(message);
     }
 
@@ -52,5 +36,4 @@ public class ScriptContext {
     public Entity createEntity() {
         return ecs.createEntity();
     }
-
 }

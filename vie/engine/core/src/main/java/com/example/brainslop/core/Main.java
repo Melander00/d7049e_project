@@ -33,6 +33,7 @@ public class Main extends ApplicationAdapter {
     ECS engine;
 
     MessageManager messageManager;
+    ScriptSystem scriptSystem;
     btDynamicsWorld btWorld;
 
     private static final boolean SHOW_COLLISION_WIREFRAMES = true;
@@ -78,7 +79,9 @@ public class Main extends ApplicationAdapter {
 
         engine = new ECS(systems);
         engine.loadSystems();
-        engine.addSystem(new ScriptSystem(engine));
+
+        scriptSystem = new ScriptSystem();
+        engine.addSystem(scriptSystem);
 
         assets.loadGLB("model/sahur.glb");
         assets.loadGLB("model/ground.glb");
@@ -181,7 +184,10 @@ public class Main extends ApplicationAdapter {
             return;
         }
 
-        engine.update(Gdx.graphics.getDeltaTime());
+        float dt = Gdx.graphics.getDeltaTime();
+
+        engine.update(dt);
+        scriptSystem.update(dt);
 
         debugDrawer.begin(sceneManager.camera);
         btWorld.debugDrawWorld();

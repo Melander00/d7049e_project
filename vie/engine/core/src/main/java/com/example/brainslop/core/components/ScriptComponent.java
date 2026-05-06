@@ -7,14 +7,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Stores script state for one entity.
  * ScriptSystem loads the script and initializes the environment on first update.
  */
-
 public class ScriptComponent implements Component {
 
-    public String scriptPath;
+    public final String scriptPath;
+
     public LuaTable environment;
-    public Map<String, Object> parameters = new HashMap<>();
+
+    public final Map<String, Object> parameters = new HashMap<>();
 
     public ScriptComponent(String scriptPath) {
         this.scriptPath = scriptPath;
