@@ -33,7 +33,7 @@ import java.io.IOException;
  * - fixedUpdate(dt): called during the fixed simulation update
  * If a function is missing, it is skipped.
  */
-public class ScriptSystem extends IteratingSystem {
+public class ScriptSystem extends IteratingSystem implements FixedUpdateSystem {
 
     private final Globals globals;
     private final FileHandleResolver resolver;
@@ -46,7 +46,7 @@ public class ScriptSystem extends IteratingSystem {
         this.resolver = resolver;
 
         // This system is called manually from frame update and fixed update.
-        setProcessing(false);
+//        setProcessing(false);
     }
 
     @Override
@@ -55,6 +55,7 @@ public class ScriptSystem extends IteratingSystem {
         super.update(deltaTime);
     }
 
+    @Override
     public void fixedUpdate(float fixedDeltaTime) {
         functionToCall = "fixedUpdate";
         super.update(fixedDeltaTime);
