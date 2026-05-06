@@ -6,7 +6,7 @@ dependencies {
   api "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
   api "com.github.mgsx-dev.gdx-gltf:gltf:$gdxGltfVersion"
-  api "org.luaj:luaj-jse:3.0.1"
+  api "org.luaj:luaj-jse:$luaVersion"
 
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
