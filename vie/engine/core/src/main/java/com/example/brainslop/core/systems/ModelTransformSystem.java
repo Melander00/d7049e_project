@@ -17,6 +17,8 @@ public class ModelTransformSystem extends IteratingSystem {
         TransformComponent transform = Mappers.transform.get(entity);
         ModelComponent model = Mappers.model.get(entity);
 
+        if(model.scene == null) return;
+
         model.scene.modelInstance.transform.set(
                 transform.position,
                 transform.rotation,

@@ -67,7 +67,9 @@ public class Main extends ApplicationAdapter {
                 new InputMovementSystem(),
                 new PhysicsMovementSystem(),
 
+                new AutoShooterSystem(),
                 physicsSystem,
+                new LifetimeSystem(),
 
                 new CameraSystem(sceneManager),
                 new ModelTransformSystem(), // Prepare models for rendering
@@ -80,6 +82,7 @@ public class Main extends ApplicationAdapter {
 
         assets.loadGLB("model/sahur.glb");
         assets.loadGLB("model/ground.glb");
+        assets.loadGLB("model/bullet.glb");
 
 
         addPlayer();
@@ -107,18 +110,23 @@ public class Main extends ApplicationAdapter {
         Entity entity = engine.createEntity();
 
         TransformComponent c = new TransformComponent();
-        c.scale.scl(10);
+//        c.scale.scl(10);
         entity.add(c);
 
         entity.add(new InputComponent());
         entity.add(new MovementComponent());
 
         ModelComponent m = new ModelComponent();
+//        m.assetPath = "model/soldier.glb";
         m.assetPath = "model/sahur.glb";
         entity.add(m);
 
+        AutoShooterComponent autoShooterComponent = new AutoShooterComponent();
+        autoShooterComponent.shotsPerSecond = 20;
+        entity.add(autoShooterComponent);
+
         btCollisionShape cylinder = new btCylinderShape(new Vector3(1f, 2f, 1f));
-        PhysicsComponent pc = PhysicsFactory.createBox(entity, 1f, cylinder);
+        PhysicsComponent pc = PhysicsFactory.createComponent(entity, 1f, cylinder);
         entity.add(pc);
 
         HealthComponent health = new HealthComponent();

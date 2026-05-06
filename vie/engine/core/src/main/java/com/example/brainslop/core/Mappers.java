@@ -14,6 +14,9 @@ public class Mappers {
     public static final ComponentMapper<PhysicsComponent> physics = ComponentMapper.getFor(PhysicsComponent.class);
     public static final ComponentMapper<CollisionComponent> collision = ComponentMapper.getFor(CollisionComponent.class);
     public static final ComponentMapper<MovementComponent> movement = ComponentMapper.getFor(MovementComponent.class);
+    public static final ComponentMapper<AutoShooterComponent> autoShooter = ComponentMapper.getFor(AutoShooterComponent.class);
+    public static final ComponentMapper<LifetimeComponent> lifetime = ComponentMapper.getFor(LifetimeComponent.class);
+
 
 
 

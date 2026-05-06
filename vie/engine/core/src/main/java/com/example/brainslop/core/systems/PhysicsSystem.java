@@ -76,6 +76,7 @@ public class PhysicsSystem extends EntitySystem {
         PhysicsComponent p = Mappers.physics.get(entity);
 
         this.world.removeRigidBody(p.rigidBody);
+        p.rigidBody.dispose();
     }
 
     private void setupStaticCollision(Entity entity) {
@@ -98,10 +99,8 @@ public class PhysicsSystem extends EntitySystem {
 
     private void removeStaticCollision(Entity entity) {
         CollisionComponent c = Mappers.collision.get(entity);
-
-
-
         world.removeCollisionObject(c.collisionObject);
+        c.collisionObject.dispose();
     }
 
     @Override
