@@ -34,7 +34,6 @@ public class AutoShooterSystem extends IteratingSystem {
     }
 
     private void shoot(Entity entity) {
-        System.out.println("shoot");
         TransformComponent t = Mappers.transform.get(entity);
 
         Entity bullet = getEngine().createEntity();

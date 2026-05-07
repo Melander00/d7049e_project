@@ -39,6 +39,7 @@ public class Main extends ApplicationAdapter {
     ExternalAssetsResolver fileResolver;
 
     private static final boolean SHOW_COLLISION_WIREFRAMES = true;
+    private static final int FIXED_UPDATE_FREQUENCY = 60; // Physics frequency
 
     private DebugDrawer debugDrawer;
 
@@ -57,7 +58,7 @@ public class Main extends ApplicationAdapter {
 
 
 
-        PhysicsSystem physicsSystem = new PhysicsSystem(60, messageManager);
+        PhysicsSystem physicsSystem = new PhysicsSystem(60, messageManager); // step frequency is deprecated in favor of global fixedUpdate
         btWorld = physicsSystem.getWorld();
         debugDrawer = new DebugDrawer();
         if(SHOW_COLLISION_WIREFRAMES) {
@@ -83,7 +84,7 @@ public class Main extends ApplicationAdapter {
                 new RenderSystem(sceneManager) // Renders models
         );
 
-        engine = new ECS(systems);
+        engine = new ECS(systems, FIXED_UPDATE_FREQUENCY);
         engine.loadSystems();
 
         assets.loadGLB("model/sahur.glb");

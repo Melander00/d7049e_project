@@ -1,5 +1,17 @@
+accum = 0
+interval = 1
+
 function update(dt)
-    print("script is running, health: " .. context:getHealth().currentHP)
-    print(dt)
-    print(context)
+
+end
+
+function fixedUpdate(dt)
+    accum = accum + dt
+    if accum > interval then
+        accum = 0
+        local rigidbody = context:getPhysics().rigidBody
+        local v3 = context:createVec3()
+        v3.y = 5
+        rigidbody:setLinearVelocity(v3)
+    end
 end

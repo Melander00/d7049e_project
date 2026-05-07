@@ -5,8 +5,10 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.example.brainslop.core.components.ModelComponent;
 import com.example.brainslop.core.messages.MessageManager;
+import com.example.brainslop.core.systems.FixedUpdateSystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +16,17 @@ import java.util.List;
 public class ECS extends Engine {
 
     private final List<EntitySystem> systems;
+    private final List<FixedUpdateSystem> fixedUpdateSystems;
     public final MessageManager messageManager;
 
-    public ECS(List<EntitySystem> systems) {
+    private float accum = 0;
+    private float stepSize = 1f/60f;
+
+    public ECS(List<EntitySystem> systems, float fixedUpdateFrequency) {
         this.systems = systems;
         this.messageManager = new MessageManager();
+        this.fixedUpdateSystems = new ArrayList<>();
+        this.stepSize = 1f / fixedUpdateFrequency;
     }
 
     /**
@@ -27,6 +35,25 @@ public class ECS extends Engine {
     public void loadSystems() {
         for(EntitySystem system : systems) {
             this.addSystem(system);
+            if (system instanceof FixedUpdateSystem fixed) {
+                fixedUpdateSystems.add(fixed);
+            }
+        }
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+
+        accum += deltaTime;
+
+        while (accum >= stepSize) {
+
+            for (FixedUpdateSystem system : fixedUpdateSystems) {
+                system.fixedUpdate(stepSize);
+            }
+
+            accum -= stepSize;
         }
     }
 
