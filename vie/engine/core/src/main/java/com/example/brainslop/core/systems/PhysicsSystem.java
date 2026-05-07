@@ -19,6 +19,7 @@ import com.example.brainslop.core.components.CollisionComponent;
 import com.example.brainslop.core.components.PhysicsComponent;
 import com.example.brainslop.core.components.TransformComponent;
 import com.example.brainslop.core.messages.CollisionEntered;
+import com.example.brainslop.core.messages.CollisionExit;
 import com.example.brainslop.core.messages.MessageManager;
 
 public class PhysicsSystem extends EntitySystem implements FixedUpdateSystem {
@@ -150,6 +151,7 @@ public class PhysicsSystem extends EntitySystem implements FixedUpdateSystem {
     @Override
     public void fixedUpdate(float deltaTime) {
         world.stepSimulation(deltaTime, 0);
+        checkCollisions();
     }
 
     private void updateTransforms() {
@@ -195,11 +197,11 @@ public class PhysicsSystem extends EntitySystem implements FixedUpdateSystem {
             }
         }
 
-//        for (Pair pair : previous) {
-//            if (!current.contains(pair)) {
-//                msgManager.sendMessage(new CollisionExited(pair.a, pair.b));
-//            }
-//        }
+        for (Pair pair : previous) {
+            if (!current.contains(pair)) {
+                msgManager.sendMessage(new CollisionExit(pair.a, pair.b));
+            }
+        }
 
         previous.clear();
         previous.addAll(current);
