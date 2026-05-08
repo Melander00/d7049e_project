@@ -17,7 +17,8 @@ public class Mappers {
     public static final ComponentMapper<AutoShooterComponent> autoShooter = ComponentMapper.getFor(AutoShooterComponent.class);
     public static final ComponentMapper<LifetimeComponent> lifetime = ComponentMapper.getFor(LifetimeComponent.class);
     public static final ComponentMapper<ScriptComponent> script = ComponentMapper.getFor(ScriptComponent.class);
-
-
+    public static final ComponentMapper<AgentComponent> agent = ComponentMapper.getFor(AgentComponent.class);
+    public static final ComponentMapper<GateComponent> gate = ComponentMapper.getFor(GateComponent.class);
+    public static final ComponentMapper<PickupComponent> pickup = ComponentMapper.getFor(PickupComponent.class);
 
 }
