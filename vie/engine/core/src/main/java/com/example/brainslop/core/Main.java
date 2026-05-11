@@ -82,7 +82,8 @@ public class Main extends ApplicationAdapter {
                 new CameraSystem(sceneManager),
                 new ModelTransformSystem(), // Prepare models for rendering
                 new RenderSystem(sceneManager), // Renders models
-                new TextRenderSystem(sceneManager) // Renders in-world text
+                new TextRenderSystem(sceneManager), // Renders in-world text
+                new ProfilingSystem()
                 // HUDRenderSystem
         );
 
