@@ -74,6 +74,7 @@ public class Main extends ApplicationAdapter {
                 new InputMovementSystem(),
                 new PhysicsMovementSystem(),
 
+                new FreezeRotationSystem(),
                 new ScriptSystem(fileResolver),
                 new AutoShooterSystem(),
                 physicsSystem,
@@ -136,6 +137,11 @@ public class Main extends ApplicationAdapter {
         text.offsetPosition.set(0, 5, 0);
         entity.add(text);
 
+
+        FreezeRotationComponent freeze = new FreezeRotationComponent();
+        freeze.freezePitch = true;
+        freeze.freezeRoll = true;
+        entity.add(freeze);
     }
 
 
@@ -231,6 +237,10 @@ public class Main extends ApplicationAdapter {
         AgentComponent agent = new AgentComponent();
         agent.faction = "enemy";
         enemy.add(agent);
+
+        ModelComponent model = new ModelComponent();
+        model.assetPath="model/sahur.glb";
+        enemy.add(model);
 
         engine.addSystem(new AgentSystem());
     }

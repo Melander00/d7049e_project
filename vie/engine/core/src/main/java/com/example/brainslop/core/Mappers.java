@@ -22,5 +22,6 @@ public class Mappers {
     public static final ComponentMapper<PickupComponent> pickup = ComponentMapper.getFor(PickupComponent.class);
     public static final ComponentMapper<TextComponent> text = ComponentMapper.getFor(TextComponent.class);
     public static final ComponentMapper<PlayerComponent> player = ComponentMapper.getFor(PlayerComponent.class);
+    public static final ComponentMapper<FreezeRotationComponent> freezeRotation = ComponentMapper.getFor(FreezeRotationComponent.class);
 
 }
