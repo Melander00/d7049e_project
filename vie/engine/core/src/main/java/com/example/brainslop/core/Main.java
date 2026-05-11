@@ -129,6 +129,7 @@ public class Main extends ApplicationAdapter {
 
         TextComponent text = new TextComponent();
         text.text = "Tung Tung Tung Sahur";
+        text.scale = 2f;
         text.offsetPosition.set(0, 5, 0);
         entity.add(text);
 
@@ -193,5 +194,27 @@ public class Main extends ApplicationAdapter {
         super.dispose();
         sceneManager.dispose();
         engine.dispose();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+
+        sceneManager.updateViewport(width, height);
+
+//        for(Entity entity : engine.getEntities()) {
+//
+//            CameraComponent cam =
+//                    entity.getComponent(
+//                            CameraComponent.class
+//                    );
+//
+//            if(cam == null)
+//                continue;
+//
+//            cam.camera.viewportWidth = width;
+//            cam.camera.viewportHeight = height;
+//            cam.camera.update(true);
+//        }
     }
 }

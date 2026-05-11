@@ -5,7 +5,9 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -30,6 +32,8 @@ public class TextRenderSystem extends EntitySystem {
 
     private final Vector3 worldPos = new Vector3();
     private final Vector3 screenPos = new Vector3();
+
+    private final Matrix4 uiMatrix = new Matrix4();
 
     public TextRenderSystem(
             SceneManager sceneManager
@@ -56,6 +60,10 @@ public class TextRenderSystem extends EntitySystem {
     @Override
     public void update(float deltaTime) {
 
+        uiMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        spriteBatch.setProjectionMatrix(uiMatrix);
+
+
         spriteBatch.begin();
 
         for (Entity entity : entities) {
@@ -80,22 +88,21 @@ public class TextRenderSystem extends EntitySystem {
                 continue;
 
             // Distance scaling
-            float dst =
-                    sceneManager.camera.position.dst(worldPos);
+            float dst = sceneManager.camera.position.dst(worldPos);
 
-            float scale =
-                    Math.max(0.5f, 10f / dst);
+
+//            float scale = Math.max(0.5f, 10f / dst);
+
+            float baseHeight = 720f; // design reference resolution
+            float screenScale = Gdx.graphics.getHeight() / baseHeight;
+
+            float scale = (10f / dst) * screenScale;
+
 
             font.getData().setScale(
                     scale * text.scale
             );
 
-//            font.draw(
-//                    spriteBatch,
-//                    text.text,
-//                    screenPos.x,
-//                    screenPos.y
-//            );
             glyphLayout.setText(font, text.text);
 
             float drawX = screenPos.x;
@@ -105,6 +112,11 @@ public class TextRenderSystem extends EntitySystem {
                 drawX -= glyphLayout.width * 0.5f;
                 drawY += glyphLayout.height * 0.5f;
             }
+
+            font.getRegion().getTexture().setFilter(
+                    Texture.TextureFilter.Nearest,
+                    Texture.TextureFilter.Nearest
+            );
 
             font.draw(
                     spriteBatch,
