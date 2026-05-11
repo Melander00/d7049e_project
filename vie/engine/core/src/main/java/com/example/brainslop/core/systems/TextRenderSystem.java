@@ -7,6 +7,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -17,6 +18,7 @@ import net.mgsx.gltf.scene3d.scene.SceneManager;
 
 public class TextRenderSystem extends EntitySystem {
 
+    private final GlyphLayout glyphLayout;
 
     private final SpriteBatch spriteBatch;
     private final BitmapFont font;
@@ -36,6 +38,7 @@ public class TextRenderSystem extends EntitySystem {
 
         spriteBatch = new SpriteBatch();
         font = new BitmapFont();
+        glyphLayout = new GlyphLayout();
 
         family = Family.all(
                 TextComponent.class,
@@ -87,11 +90,27 @@ public class TextRenderSystem extends EntitySystem {
                     scale * text.scale
             );
 
+//            font.draw(
+//                    spriteBatch,
+//                    text.text,
+//                    screenPos.x,
+//                    screenPos.y
+//            );
+            glyphLayout.setText(font, text.text);
+
+            float drawX = screenPos.x;
+            float drawY = screenPos.y;
+
+            if (text.centered) {
+                drawX -= glyphLayout.width * 0.5f;
+                drawY += glyphLayout.height * 0.5f;
+            }
+
             font.draw(
                     spriteBatch,
-                    text.text,
-                    screenPos.x,
-                    screenPos.y
+                    glyphLayout,
+                    drawX,
+                    drawY
             );
         }
 
