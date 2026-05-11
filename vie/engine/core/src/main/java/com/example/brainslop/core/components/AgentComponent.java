@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 
 public class AgentComponent implements Component {
 
+    public String faction = "";
     public String behaviorType = "";
     public String currentState = "";
     public Entity targetEntity = null;

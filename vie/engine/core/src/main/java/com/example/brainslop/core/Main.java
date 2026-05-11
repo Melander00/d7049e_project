@@ -94,6 +94,7 @@ public class Main extends ApplicationAdapter {
         assets.loadGLB("model/bullet.glb");
 
         addPlayer();
+        addEnemy();
         addGround();
         addCamera();
     }
@@ -107,6 +108,7 @@ public class Main extends ApplicationAdapter {
 
         entity.add(new InputComponent());
         entity.add(new MovementComponent());
+        entity.add(new PlayerComponent());
 
         ModelComponent m = new ModelComponent();
 //        m.assetPath = "model/soldier.glb";
@@ -216,5 +218,19 @@ public class Main extends ApplicationAdapter {
 //            cam.camera.viewportHeight = height;
 //            cam.camera.update(true);
 //        }
+    }
+
+    private void addEnemy() {
+        Entity enemy = engine.createEntity();
+
+        TransformComponent t = new TransformComponent();
+        t.position.set(5, 0, 5);
+        enemy.add(t);
+
+        AgentComponent agent = new AgentComponent();
+        agent.faction = "enemy";
+        enemy.add(agent);
+
+        engine.addSystem(new AgentSystem());
     }
 }
