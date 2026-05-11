@@ -20,5 +20,6 @@ public class Mappers {
     public static final ComponentMapper<AgentComponent> agent = ComponentMapper.getFor(AgentComponent.class);
     public static final ComponentMapper<GateComponent> gate = ComponentMapper.getFor(GateComponent.class);
     public static final ComponentMapper<PickupComponent> pickup = ComponentMapper.getFor(PickupComponent.class);
+    public static final ComponentMapper<TextComponent> text = ComponentMapper.getFor(TextComponent.class);
 
 }

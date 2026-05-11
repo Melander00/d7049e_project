@@ -81,7 +81,9 @@ public class Main extends ApplicationAdapter {
 
                 new CameraSystem(sceneManager),
                 new ModelTransformSystem(), // Prepare models for rendering
-                new RenderSystem(sceneManager) // Renders models
+                new RenderSystem(sceneManager), // Renders models
+                new TextRenderSystem(sceneManager) // Renders in-world text
+                // HUDRenderSystem
         );
 
         engine = new ECS(systems, FIXED_UPDATE_FREQUENCY);
@@ -124,6 +126,12 @@ public class Main extends ApplicationAdapter {
         health.maxHP = 100f;
         entity.add(health);
         entity.add(new ScriptComponent("lua/test.lua"));
+
+        TextComponent text = new TextComponent();
+        text.text = "Tung Tung Tung Sahur";
+        text.offsetPosition.set(0, 5, 0);
+        entity.add(text);
+
     }
 
 
