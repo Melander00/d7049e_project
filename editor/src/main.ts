@@ -1,16 +1,18 @@
 import electron from "electron";
 const { app, BrowserWindow } = electron;
 
-const isProd = process.env["NODE_ENV"] === "production" || true;
+const isProd = process.env["NODE_ENV"] === "production";
 
 const createWindow = () => {
     const win = new BrowserWindow({
-        width: 600,
-        height: 600,
+        width: 1200,
+        height: 800,
     });
 
     if (isProd) {
         win.loadFile("./www/index.html");
+    } else {
+        win.loadURL("http://localhost:5173")
     }
 };
 
