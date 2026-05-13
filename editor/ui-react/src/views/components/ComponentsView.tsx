@@ -10,8 +10,6 @@ export default function ComponentsView() {
         components.push({...comp, key: key})
     }
 
-
-
     return(
         <>
         <div className={styles.container}>

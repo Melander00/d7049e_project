@@ -13,11 +13,12 @@
 }
 
 .entity {
-
+    cursor: pointer;
     padding: 15px;
-    border: 1px solid var(--accent);
+    border: 3px solid transparent;
+    border-radius: 10px;
 }
 
 .active {
-    background: green;
+    border-color: rgb(22, 123, 163);
 }

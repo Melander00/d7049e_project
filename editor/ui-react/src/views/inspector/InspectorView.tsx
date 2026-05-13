@@ -23,13 +23,12 @@ export default function InspectorView() {
     const onComponentDrop = (type: keyof typeof schema) => {
         const component = schema[type]
 
-        // create component and dispatch
+        // TODO: create component and dispatch
         dispatch(addComponent({
             index: entityIndex,
             component: component
         }))
         
-        console.log(component.type, "was dropped")
     }
     
     if(entity === null) return ""

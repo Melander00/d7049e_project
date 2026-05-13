@@ -35,6 +35,18 @@ export const entitiesSlice = createSlice({
             state.entities.push(newEntity())
             state.activeIndex = state.entities.length - 1
         },
+        removeEntity: (state, action: PayloadAction<number>) => {
+            state.entities.splice(action.payload, 1)
+            if(state.activeIndex > state.entities.length - 1) {
+                state.activeIndex = state.entities.length - 1
+            }
+        },
+        duplicateEntity: (state, action: PayloadAction<number>) => {
+            const entity = state.entities[action.payload]
+            const cloned = JSON.parse(JSON.stringify(entity))
+            cloned.id = crypto.randomUUID()
+            state.entities.splice(action.payload, 0, cloned)
+        },
         setEntityName: (state, action: PayloadAction<{index: number, name: string}>) => {
             state.entities[action.payload.index].name = action.payload.name
         },
@@ -55,6 +67,8 @@ export const entitiesSlice = createSlice({
 
 export const { 
     createEntity,
+    removeEntity,
+    duplicateEntity,
     setEntityName,
     setEntityTag,
     setActiveEntity,
