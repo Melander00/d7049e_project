@@ -1,0 +1,20 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.component-list {
+    flex: 1;
+    height: 100%;
+}
+
+.drop-component {
+    display: flex;
+    flex-direction: column;
+
+    > hr {
+        width: 60%;
+    }
+}
