@@ -1,10 +1,14 @@
 package com.example.brainslop.core;
 
+import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
@@ -14,13 +18,19 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.collision.btCylinderShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.Json;
 import com.example.brainslop.core.components.*;
+import com.example.brainslop.core.physics.CollisionShape;
+import com.example.brainslop.core.serialize.AssetPaths;
+import com.example.brainslop.core.serialize.CollisionShapeComponent;
+import com.example.brainslop.core.serialize.Config;
+import com.example.brainslop.core.serialize.GameObject;
 import com.example.brainslop.core.physics.PhysicsFactory;
 import com.example.brainslop.core.systems.*;
 import com.example.brainslop.core.util.ExternalAssetsResolver;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 import com.example.brainslop.core.messages.*;
-
 
 
 import java.util.List;
@@ -31,15 +41,12 @@ public class Main extends ApplicationAdapter {
     SceneManager sceneManager;
 
     World world;
-    ECS engine;
+    public ECS engine;
 
     MessageManager messageManager;
     btDynamicsWorld btWorld;
 
     ExternalAssetsResolver fileResolver;
-
-    private static final boolean SHOW_COLLISION_WIREFRAMES = true;
-    private static final int FIXED_UPDATE_FREQUENCY = 60; // Physics frequency
 
     private DebugDrawer debugDrawer;
 
@@ -56,16 +63,9 @@ public class Main extends ApplicationAdapter {
 
         messageManager = new MessageManager();
 
+        Config config = loadConfig(fileResolver);
 
-
-        PhysicsSystem physicsSystem = new PhysicsSystem(60, messageManager); // step frequency is deprecated in favor of global fixedUpdate
-        btWorld = physicsSystem.getWorld();
-        debugDrawer = new DebugDrawer();
-        if(SHOW_COLLISION_WIREFRAMES) {
-            debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_DrawWireframe);
-        }
-        btWorld.setDebugDrawer(debugDrawer);
-
+        PhysicsSystem physicsSystem = new PhysicsSystem(messageManager); // step frequency is deprecated in favor of global fixedUpdate
         List<EntitySystem> systems = List.of(
                 new SceneSystem(sceneManager, assets), // Handles new model instances.
 
@@ -88,93 +88,22 @@ public class Main extends ApplicationAdapter {
                 // HUDRenderSystem
         );
 
-        engine = new ECS(systems, FIXED_UPDATE_FREQUENCY);
+        engine = new ECS(systems, config.fixedTimeFrequency, messageManager);
         engine.loadSystems();
 
-        assets.loadGLB("model/sahur.glb");
-        assets.loadGLB("model/ground.glb");
-        assets.loadGLB("model/bullet.glb");
+        preloadAssetsList(fileResolver, assets);
+        createEntities(fileResolver);
 
-        addPlayer();
-        addEnemy();
-        addGround();
-        addCamera();
-    }
+//        printEntity(createCamera());
+//        printEntity(addPlayer());
+//        printEntity(addGround());
 
-    private void addPlayer() {
-        Entity entity = engine.createEntity();
-
-        TransformComponent c = new TransformComponent();
-//        c.scale.scl(10);
-        entity.add(c);
-
-        entity.add(new InputComponent());
-        entity.add(new MovementComponent());
-        entity.add(new PlayerComponent());
-
-        ModelComponent m = new ModelComponent();
-//        m.assetPath = "model/soldier.glb";
-        m.assetPath = "model/sahur.glb";
-        entity.add(m);
-
-        AutoShooterComponent autoShooterComponent = new AutoShooterComponent();
-        autoShooterComponent.shotsPerSecond = 20;
-        entity.add(autoShooterComponent);
-
-        btCollisionShape cylinder = new btCylinderShape(new Vector3(1f, 2f, 1f));
-        PhysicsComponent pc = PhysicsFactory.createComponent(entity, 1f, cylinder);
-        entity.add(pc);
-
-        HealthComponent health = new HealthComponent();
-        health.currentHP = 100f;
-        health.maxHP = 100f;
-        entity.add(health);
-        entity.add(new ScriptComponent("lua/test.lua"));
-
-        TextComponent text = new TextComponent();
-        text.text = "Tung Tung Tung Sahur";
-        text.scale = 2f;
-        text.offsetPosition.set(0, 5, 0);
-        entity.add(text);
-
-
-        FreezeRotationComponent freeze = new FreezeRotationComponent();
-        freeze.freezePitch = true;
-        freeze.freezeRoll = true;
-        entity.add(freeze);
-    }
-
-
-    private void addGround() {
-        btCollisionShape groundShape = new btBoxShape(new Vector3(10, 1, 8));
-
-        Entity ground = engine.createEntity();
-
-        TransformComponent t = new TransformComponent();
-        t.position.set(0, -5, 0);
-        ground.add(t);
-
-        ModelComponent m = new ModelComponent();
-        m.assetPath = "model/ground.glb";
-        ground.add(m);
-
-        CollisionComponent c = new CollisionComponent();
-        c.shape = groundShape;
-        ground.add(c);
-    }
-
-    private void addCamera() {
-        Entity cam = engine.createEntity();
-        CameraComponent camComp = new CameraComponent();
-        camComp.camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camComp.camera.near = 0.1f;
-        camComp.camera.far = 100f;
-        camComp.enabled = true;
-        cam.add(camComp);
-        TransformComponent t = new TransformComponent();
-        t.position.set(0,9,-9);
-        t.rotation.setEulerAngles(180,-30,0);
-        cam.add(t);
+        btWorld = physicsSystem.getWorld();
+        debugDrawer = new DebugDrawer();
+        if(config.debugCollisionWireframe) {
+            debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_DrawWireframe);
+        }
+        btWorld.setDebugDrawer(debugDrawer);
     }
 
     @Override
@@ -203,29 +132,194 @@ public class Main extends ApplicationAdapter {
         super.dispose();
         sceneManager.dispose();
         engine.dispose();
+        assets.getAssetManager().dispose();
     }
 
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
-
         sceneManager.updateViewport(width, height);
-
-//        for(Entity entity : engine.getEntities()) {
-//
-//            CameraComponent cam =
-//                    entity.getComponent(
-//                            CameraComponent.class
-//                    );
-//
-//            if(cam == null)
-//                continue;
-//
-//            cam.camera.viewportWidth = width;
-//            cam.camera.viewportHeight = height;
-//            cam.camera.update(true);
-//        }
     }
+
+
+    private Config loadConfig(FileHandleResolver resolver) {
+        try {
+            FileHandle configFile = resolver.resolve("config.json");
+            Json json = new Json();
+            return json.fromJson(Config.class, configFile);
+        } catch (RuntimeException e) {
+            return new Config();
+        }
+
+    }
+
+    private void preloadAssetsList(FileHandleResolver resolver, Assets assets) {
+        try {
+            FileHandle glbAssets = resolver.resolve("glb-assets.json");
+            Json json = new Json();
+            List<String> assetPaths = json.fromJson(AssetPaths.class, glbAssets).paths;
+            for (String path : assetPaths) {
+                assets.loadGLB(path);
+            }
+        } catch (GdxRuntimeException ignored) {
+
+        }
+    }
+
+    private void createEntities(FileHandleResolver resolver) {
+        try {
+            FileHandle entitiesFile = resolver.resolve("entities.jsonl");
+            String data = entitiesFile.readString();
+            String[] lines = data.split("\\r?\\n");
+            Json json = new Json();
+            for (String line : lines) {
+                if(line.isBlank()) continue;
+                GameObject object = json.fromJson(GameObject.class, line);
+                addGameObject(object);
+            }
+        } catch (GdxRuntimeException e) {
+            throw e;
+        }
+    }
+
+    private void addGameObject(GameObject object) {
+        Entity entity = engine.createEntity();
+        for (Component component : object.components) {
+            entity.add(component);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private void printEntity(Entity entity) {
+        GameObject obj = new GameObject();
+        ImmutableArray<Component> comps = entity.getComponents();
+        Json json = new Json();
+        for (Component comp : comps) {
+            obj.components.add(comp);
+            try {
+//                System.out.println(json.toJson(comp));
+            } catch (Throwable t) {
+                System.out.println(comp.getClass());
+                t.printStackTrace();
+            }
+        }
+        String s = json.toJson(obj);
+        System.out.println(s);
+
+//        engine.addEntity(entity);
+    }
+
+
+
+    private Entity addPlayer() {
+        Entity entity = new Entity();
+
+        TransformComponent c = new TransformComponent();
+//        c.scale.scl(10);
+        entity.add(c);
+
+        entity.add(new InputComponent());
+        entity.add(new MovementComponent());
+        entity.add(new PlayerComponent());
+
+        ModelComponent m = new ModelComponent();
+//        m.assetPath = "model/soldier.glb";
+        m.assetPath = "model/sahur.glb";
+        entity.add(m);
+
+        AutoShooterComponent autoShooterComponent = new AutoShooterComponent();
+        autoShooterComponent.shotsPerSecond = 20;
+        entity.add(autoShooterComponent);
+
+        CollisionShapeComponent shape = new CollisionShapeComponent();
+        shape.type = CollisionShape.CYLINDER;
+        shape.a = 1;
+        shape.b = 2;
+        shape.c = 1;
+        PhysicsComponent pc = PhysicsFactory.createComponent(entity, 1f, shape);
+        entity.add(pc);
+
+        HealthComponent health = new HealthComponent();
+        health.currentHP = 100f;
+        health.maxHP = 100f;
+        entity.add(health);
+        entity.add(new ScriptComponent("lua/test.lua"));
+
+        TextComponent text = new TextComponent();
+        text.text = "Tung Tung Tung Sahur";
+        text.scale = 2f;
+        text.offsetPosition.set(0, 5, 0);
+        entity.add(text);
+
+
+        FreezeRotationComponent freeze = new FreezeRotationComponent();
+        freeze.freezePitch = true;
+        freeze.freezeRoll = true;
+        entity.add(freeze);
+
+        return entity;
+    }
+
+
+    private Entity addGround() {
+        Entity ground = new Entity();
+
+        TransformComponent t = new TransformComponent();
+        t.position.set(0, -5, 0);
+        ground.add(t);
+
+        ModelComponent m = new ModelComponent();
+        m.assetPath = "model/ground.glb";
+        ground.add(m);
+
+        CollisionComponent c = new CollisionComponent();
+
+        c.shape = new CollisionShapeComponent();
+        c.shape.type = CollisionShape.BOX;
+        c.shape.a = 10;
+        c.shape.b = 1;
+        c.shape.c = 8;
+        ground.add(c);
+
+        return ground;
+    }
+
+    private Entity createCamera() {
+        Entity cam = new Entity();
+        CameraComponent camComp = new CameraComponent();
+        camComp.camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camComp.camera.near = 0.1f;
+        camComp.camera.far = 100f;
+        camComp.enabled = true;
+        cam.add(camComp);
+
+        TransformComponent t = new TransformComponent();
+        t.position.set(0,9,-9);
+        t.rotation.setEulerAngles(180,-30,0);
+        cam.add(t);
+
+        return cam;
+    }
+
+
 
     private void addEnemy() {
         Entity enemy = engine.createEntity();

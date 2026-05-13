@@ -21,6 +21,7 @@ import com.example.brainslop.core.components.TransformComponent;
 import com.example.brainslop.core.messages.CollisionEntered;
 import com.example.brainslop.core.messages.CollisionExit;
 import com.example.brainslop.core.messages.MessageManager;
+import com.example.brainslop.core.physics.PhysicsFactory;
 
 public class PhysicsSystem extends EntitySystem implements FixedUpdateSystem {
     private final btDynamicsWorld world;
@@ -33,9 +34,6 @@ public class PhysicsSystem extends EntitySystem implements FixedUpdateSystem {
     private final ObjectSet<Pair> current = new ObjectSet<>();
     private final ObjectSet<Pair> previous = new ObjectSet<>();
 
-    private float accum = 0f;
-    private final float step;
-
     private ImmutableArray<Entity> entities;
     private ImmutableArray<Entity> collisionObjects;
 
@@ -44,7 +42,7 @@ public class PhysicsSystem extends EntitySystem implements FixedUpdateSystem {
     private final Vector3 tempVec = new Vector3();
     private final Quaternion tempQuat = new Quaternion();
 
-    public PhysicsSystem(int stepFrequency, MessageManager msgManager) {
+    public PhysicsSystem(MessageManager msgManager) {
         this.config = new btDefaultCollisionConfiguration();
         this.dispatcher = new btCollisionDispatcher(this.config);
         this.broadphase = new btDbvtBroadphase();
@@ -52,7 +50,6 @@ public class PhysicsSystem extends EntitySystem implements FixedUpdateSystem {
         this.world = new btDiscreteDynamicsWorld(this.dispatcher, this.broadphase, this.solver, this.config);
         this.world.setGravity(new Vector3(0, -10f, 0));
 
-        this.step = 1f / stepFrequency;
 
         this.msgManager = msgManager;
     }
@@ -66,6 +63,10 @@ public class PhysicsSystem extends EntitySystem implements FixedUpdateSystem {
         PhysicsComponent p = Mappers.physics.get(entity);
 
         tempMatrix.set(t.position, t.rotation, t.scale);
+
+        if(p.rigidBody == null) {
+            p.rigidBody = PhysicsFactory.createRigidBody(entity, p.mass, p.shape);
+        }
 
         p.rigidBody.setWorldTransform(tempMatrix);
         p.rigidBody.userData = entity;
@@ -87,7 +88,8 @@ public class PhysicsSystem extends EntitySystem implements FixedUpdateSystem {
         tempMatrix.set(t.position, t.rotation, t.scale);
 
         c.collisionObject = new btCollisionObject();
-        c.collisionObject.setCollisionShape(c.shape);
+        btCollisionShape collShape = PhysicsFactory.createShape(c.shape.type, c.shape.a, c.shape.b, c.shape.c, c.shape.shapeName);
+        c.collisionObject.setCollisionShape(collShape);
         c.collisionObject.setWorldTransform(tempMatrix);
         c.collisionObject.userData = entity;
 
@@ -135,43 +137,9 @@ public class PhysicsSystem extends EntitySystem implements FixedUpdateSystem {
     }
 
     @Override
-    public void update(float deltaTime) {
-//        accum += deltaTime;
-//
-//        while (accum >= step) {
-//            world.stepSimulation(step, 0);
-//
-////            updateTransforms();
-//            checkCollisions();
-//
-//            accum -= step;
-//        }
-    }
-
-    @Override
     public void fixedUpdate(float deltaTime) {
         world.stepSimulation(deltaTime, 0);
         checkCollisions();
-    }
-
-    private void updateTransforms() {
-        for (Entity entity : this.entities) {
-            TransformComponent t = Mappers.transform.get(entity);
-            PhysicsComponent p = Mappers.physics.get(entity);
-
-            // Fill tempMatrix (NO allocation)
-            p.rigidBody.getWorldTransform(tempMatrix);
-
-            // Extract translation (NO allocation)
-            tempMatrix.getTranslation(tempVec);
-
-            // Extract rotation (NO allocation)
-            tempMatrix.getRotation(tempQuat);
-
-            // Copy into ECS
-            t.position.set(tempVec);
-            t.rotation.set(tempQuat);
-        }
     }
 
     private void checkCollisions() {

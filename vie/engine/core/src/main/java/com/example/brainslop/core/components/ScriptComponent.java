@@ -14,11 +14,15 @@ public class ScriptComponent implements Component {
 
     public final String scriptPath;
 
-    public LuaTable environment;
+    public transient LuaTable environment;
 
-    public final Map<String, Object> parameters = new HashMap<>();
+    public transient final Map<String, Object> parameters = new HashMap<>();
 
     public ScriptComponent(String scriptPath) {
         this.scriptPath = scriptPath;
+    }
+
+    public ScriptComponent() {
+        this.scriptPath = "";
     }
 }

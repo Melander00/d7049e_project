@@ -8,18 +8,23 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import com.example.brainslop.core.Mappers;
 import com.example.brainslop.core.components.*;
+import com.example.brainslop.core.physics.CollisionShape;
 import com.example.brainslop.core.physics.PhysicsFactory;
+import com.example.brainslop.core.serialize.CollisionShapeComponent;
 
 import java.util.Vector;
 
 public class AutoShooterSystem extends IteratingSystem {
 
-    btSphereShape bulletShape = new btSphereShape(0.1f);
+    CollisionShapeComponent bulletShape = new CollisionShapeComponent();
 
     private final Vector3 tempVector = new Vector3();
 
     public AutoShooterSystem() {
         super(Family.all(TransformComponent.class, AutoShooterComponent.class).get());
+        bulletShape.type = CollisionShape.SPHERE;
+        bulletShape.a = 0.1f;
+        bulletShape.shapeName = "bullet";
     }
 
     @Override

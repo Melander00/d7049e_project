@@ -22,9 +22,9 @@ public class ECS extends Engine {
     private float accum = 0;
     private float stepSize = 1f/60f;
 
-    public ECS(List<EntitySystem> systems, float fixedUpdateFrequency) {
+    public ECS(List<EntitySystem> systems, float fixedUpdateFrequency, MessageManager messageManager) {
         this.systems = systems;
-        this.messageManager = new MessageManager();
+        this.messageManager = messageManager;
         this.fixedUpdateSystems = new ArrayList<>();
         this.stepSize = 1f / fixedUpdateFrequency;
     }

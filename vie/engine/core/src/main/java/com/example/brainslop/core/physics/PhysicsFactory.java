@@ -2,22 +2,68 @@ package com.example.brainslop.core.physics;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBodyFlags;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.example.brainslop.core.Mappers;
+import com.example.brainslop.core.serialize.CollisionShapeComponent;
 import com.example.brainslop.core.components.PhysicsComponent;
 import com.example.brainslop.core.components.TransformComponent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PhysicsFactory {
 
-    private static PhysicsComponent createPC(
+    private static final Map<String, btCollisionShape> shapeCache = new HashMap<>();
+
+    private static btCollisionShape createShape(
+            CollisionShape type,
+            float a,
+            float b,
+            float c
+    ) {
+
+        return switch(type) {
+            case CYLINDER -> new btCylinderShape(new Vector3(a,b,c));
+            case CAPSULE -> new btCapsuleShape(a, b);
+            case SPHERE -> new btSphereShape(a);
+            default -> new btBoxShape(new Vector3(a,b,c));
+        };
+    }
+
+    public static btCollisionShape createShape(
+            CollisionShape type,
+            float a,
+            float b,
+            float c,
+            String cacheName
+    ) {
+
+        if(cacheName == null) {
+            return createShape(type, a, b, c);
+        }
+
+        if(shapeCache.containsKey(cacheName)) {
+            return shapeCache.get(cacheName);
+        }
+
+        btCollisionShape shape = createShape(type, a, b, c);
+        shapeCache.put(cacheName, shape);
+        return shape;
+    }
+
+
+
+    public static btRigidBody createRigidBody(
             Entity entity,
             float mass,
-            btCollisionShape shape
+            CollisionShapeComponent shapeC
     ) {
         TransformComponent transform = Mappers.transform.get(entity);
+
+        btCollisionShape shape = createShape(shapeC.type, shapeC.a, shapeC.b, shapeC.c, shapeC.shapeName);
 
         Vector3 inertia = new Vector3();
         if (mass > 0f) shape.calculateLocalInertia(mass, inertia);
@@ -34,9 +80,25 @@ public class PhysicsFactory {
 
         btRigidBody body = new btRigidBody(info);
 
+        info.dispose();
+
+        return body;
+    }
+
+    private static PhysicsComponent createPC(
+            Entity entity,
+            float mass,
+            CollisionShapeComponent shape
+    ) {
+
+        btRigidBody body = createRigidBody(entity, mass, shape);
+
         PhysicsComponent pc = new PhysicsComponent();
 
         pc.rigidBody = body;
+
+        pc.mass = mass;
+        pc.shape = shape;
 
         body.userData = entity;
 
@@ -46,7 +108,7 @@ public class PhysicsFactory {
     public static PhysicsComponent createComponent(
             Entity entity,
             float mass,
-            btCollisionShape shape
+            CollisionShapeComponent shape
     ) {
         return createPC(entity, mass, shape);
     }
@@ -54,7 +116,7 @@ public class PhysicsFactory {
     public static PhysicsComponent createComponent(
             Entity entity,
             float mass,
-            btCollisionShape shape,
+            CollisionShapeComponent shape,
             boolean hasGravity
     ) {
 

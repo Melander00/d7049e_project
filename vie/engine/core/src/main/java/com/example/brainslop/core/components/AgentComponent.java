@@ -8,6 +8,6 @@ public class AgentComponent implements Component {
     public String faction = "";
     public String behaviorType = "";
     public String currentState = "";
-    public Entity targetEntity = null;
+    public transient Entity targetEntity = null;
 }
 

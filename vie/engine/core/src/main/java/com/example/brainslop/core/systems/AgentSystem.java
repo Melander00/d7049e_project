@@ -48,11 +48,11 @@ public class AgentSystem extends IteratingSystem {
         } else if (agent.faction.equals("ally")) {
             agent.targetEntity = findNearest(entity, enemyEntities);
         }
-        if (agent.targetEntity != null) {
-            Gdx.app.log("AgentSystem", "Agent has target: " + agent.targetEntity);
-        } else {
-            Gdx.app.log("AgentSystem", "Agent has no target");
-        }
+//        if (agent.targetEntity != null) {
+//            Gdx.app.log("AgentSystem", "Agent has target: " + agent.targetEntity);
+//        } else {
+//            Gdx.app.log("AgentSystem", "Agent has no target");
+//        }
 
     }
 
