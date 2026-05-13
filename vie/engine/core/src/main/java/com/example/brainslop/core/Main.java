@@ -19,13 +19,10 @@ import com.badlogic.gdx.physics.bullet.collision.btCylinderShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonWriter;
 import com.example.brainslop.core.components.*;
 import com.example.brainslop.core.physics.CollisionShape;
-import com.example.brainslop.core.serialize.AssetPaths;
-import com.example.brainslop.core.serialize.CollisionShapeComponent;
-import com.example.brainslop.core.serialize.Config;
-import com.example.brainslop.core.serialize.GameObject;
+import com.example.brainslop.core.serialize.*;
 import com.example.brainslop.core.physics.PhysicsFactory;
 import com.example.brainslop.core.systems.*;
 import com.example.brainslop.core.util.ExternalAssetsResolver;
@@ -50,6 +47,8 @@ public class Main extends ApplicationAdapter {
 
     private DebugDrawer debugDrawer;
 
+    Json json = new Json();
+
     @Override
     public void create() {
         Bullet.init();
@@ -57,7 +56,7 @@ public class Main extends ApplicationAdapter {
         fileResolver = new ExternalAssetsResolver(".");
 
         assets = new Assets(new AssetManager(fileResolver));
-        sceneManager = new SceneManager();
+        sceneManager = new SceneManager(50);
         world = new World(sceneManager);
         world.setupCubeMap();
 
@@ -145,7 +144,6 @@ public class Main extends ApplicationAdapter {
     private Config loadConfig(FileHandleResolver resolver) {
         try {
             FileHandle configFile = resolver.resolve("config.json");
-            Json json = new Json();
             return json.fromJson(Config.class, configFile);
         } catch (RuntimeException e) {
             return new Config();
@@ -156,7 +154,6 @@ public class Main extends ApplicationAdapter {
     private void preloadAssetsList(FileHandleResolver resolver, Assets assets) {
         try {
             FileHandle glbAssets = resolver.resolve("glb-assets.json");
-            Json json = new Json();
             List<String> assetPaths = json.fromJson(AssetPaths.class, glbAssets).paths;
             for (String path : assetPaths) {
                 assets.loadGLB(path);
@@ -171,7 +168,6 @@ public class Main extends ApplicationAdapter {
             FileHandle entitiesFile = resolver.resolve("entities.jsonl");
             String data = entitiesFile.readString();
             String[] lines = data.split("\\r?\\n");
-            Json json = new Json();
             for (String line : lines) {
                 if(line.isBlank()) continue;
                 GameObject object = json.fromJson(GameObject.class, line);
@@ -211,7 +207,7 @@ public class Main extends ApplicationAdapter {
     private void printEntity(Entity entity) {
         GameObject obj = new GameObject();
         ImmutableArray<Component> comps = entity.getComponents();
-        Json json = new Json();
+        json.setUsePrototypes(false);
         for (Component comp : comps) {
             obj.components.add(comp);
             try {
@@ -305,9 +301,9 @@ public class Main extends ApplicationAdapter {
     private Entity createCamera() {
         Entity cam = new Entity();
         CameraComponent camComp = new CameraComponent();
-        camComp.camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camComp.camera.near = 0.1f;
-        camComp.camera.far = 100f;
+        camComp.fov = 70;
+        camComp.near = 0.1f;
+        camComp.far = 100f;
         camComp.enabled = true;
         cam.add(camComp);
 

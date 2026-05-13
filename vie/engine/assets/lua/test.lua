@@ -1,5 +1,5 @@
 accum = 0
-interval = 1
+interval = 2
 
 function update(dt)
 

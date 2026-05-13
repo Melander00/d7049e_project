@@ -16,3 +16,132 @@ dependencies {
 jar {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
+import java.lang.reflect.Modifier
+import groovy.json.JsonOutput
+import java.net.URLClassLoader
+
+tasks.register("generateComponentSchema") {
+
+  group = "tools"
+  description = "Generates recursive components.schema.json"
+
+  doLast {
+
+    def packageName = "com.example.brainslop.core.components"
+    def outputFile = file("$projectDir/assets/schema/components.schema.json")
+
+    outputFile.parentFile.mkdirs()
+
+    def classesDir = file("$buildDir/classes/java/main")
+
+    if (!classesDir.exists()) {
+      throw new GradleException("Classes not built. Run ./gradlew build first.")
+    }
+
+    // Include full runtime classpath (important for enums, dependencies, etc.)
+    def urls = sourceSets.main.runtimeClasspath.files.collect {
+      it.toURI().toURL()
+    }
+
+    def classLoader = new URLClassLoader(urls as URL[], this.class.classLoader)
+
+    def isPrimitiveType = { Class t ->
+      return t.isPrimitive() ||
+              t == String ||
+              t == Integer ||
+              t == Float ||
+              t == Boolean ||
+              t == Long ||
+              t == Double
+    }
+
+    def schemaOfClass
+    schemaOfClass = { Class cls ->
+
+      def result = [
+              type: cls.simpleName,
+              class: cls.canonicalName,
+              fields: [:]
+      ]
+
+      cls.declaredFields.each { f ->
+
+        if (Modifier.isStatic(f.modifiers)) return
+        if (Modifier.isTransient(f.modifiers)) return
+
+        def t = f.type
+
+        // ENUM
+        if (t.isEnum()) {
+          result.fields[f.name] = [
+                  type: "enum",
+                  values: t.enumConstants.collect { it.toString() }
+          ]
+        }
+
+        // PRIMITIVES + SIMPLE TYPES
+        else if (isPrimitiveType(t)) {
+          result.fields[f.name] = t.simpleName.toLowerCase()
+        }
+
+        // LISTS (basic support)
+        else if (List.isAssignableFrom(t)) {
+          result.fields[f.name] = [
+                  type: "list",
+                  element: "unknown"
+          ]
+        }
+
+        // NESTED OBJECT (RECURSIVE)
+        else {
+          try {
+            result.fields[f.name] = schemaOfClass(t)
+          } catch (Exception ignored) {
+            result.fields[f.name] = [
+                    type: t.simpleName,
+                    fields: "unresolved"
+            ]
+          }
+        }
+      }
+
+      return result
+    }
+
+    def schema = [:]
+
+    file(classesDir).eachFileRecurse { file ->
+
+      if (!file.name.endsWith(".class")) return
+
+      def relativePath = file.absolutePath
+              .replace(classesDir.absolutePath + "/", "")
+              .replace(".class", "")
+              .replace("/", ".")
+//      def relativePath = file.absolutePath
+
+      if (!relativePath.startsWith(packageName)) return
+
+      try {
+        Class<?> cls = classLoader.loadClass(relativePath)
+
+        if (cls.isInterface() || Modifier.isAbstract(cls.modifiers)) return
+
+        def componentName = cls.simpleName
+                .replace("Component", "")
+                .toLowerCase()
+
+        schema[componentName] = schemaOfClass(cls)
+
+      } catch (Exception e) {
+        println "Skipped: " + relativePath + " -> " + e.message
+      }
+    }
+
+    def json = JsonOutput.prettyPrint(JsonOutput.toJson(schema))
+    outputFile.text = json
+
+    println "Generated schema: " + outputFile
+  }
+}
