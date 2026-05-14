@@ -20,7 +20,6 @@ const template: (MenuItemConstructorOptions | MenuItem)[] = [
             { role: "quit" }
         ]
     },
-    
 ]
 
 if(!isProd) {
