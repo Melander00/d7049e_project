@@ -2,6 +2,7 @@ import schema from "@renderer/assets/components.schema.json"
 
 import {
     EntityComponent,
+    removeComponent,
     updateComponent
 } from "@renderer/store/features/entitiesSlice"
 
@@ -10,6 +11,7 @@ import {
     useAppSelector
 } from "@renderer/store/hooks"
 
+import ContextMenu from "@renderer/components/contextMenu/ContextMenu"
 import Icon from "@renderer/components/icon/Icon"
 import { useState } from "react"
 import styles from "./inspector.module.css"
@@ -38,6 +40,14 @@ export default function EntityComponentElement({
         s => s.class === component.class
     )
 
+    const Menu = ContextMenu({
+        options: [
+            { text: "Delete Component", value: "delete", onClick: () => {
+                dispatch(removeComponent({index: entityIndex, componentIndex: index}))
+            } }
+        ],
+    })
+
     if(!schemaEntry) {
         return null
     }
@@ -52,7 +62,11 @@ export default function EntityComponentElement({
     }
 
     return(
-        <div className={styles.component}>
+        <>
+        {Menu.element}
+        <div className={styles.component} onContextMenu={e => {
+            Menu.show(e.clientX, e.clientY)
+        }}>
 
             <div className={styles.componentHeader} onClick={e => setCollapsed(f => !f)} >
                 <span className={styles.componentHeaderDrop} >
@@ -75,6 +89,7 @@ export default function EntityComponentElement({
             )}
 
         </div>
+        </>
     )
 }
 
@@ -204,11 +219,18 @@ function PrimitiveField({
                         onChange(raw)
                     }}
 
+                    step={type === "float" ? "any" : 1}
+
                     value={value}
                     onChange={e => {
 
                         if(type === "string") {
                             onChange(e.target.value)
+                            return
+                        }
+
+                        if(e.target.value === "") {
+                            onChange("")
                             return
                         }
 

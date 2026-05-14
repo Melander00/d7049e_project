@@ -32,7 +32,6 @@ function recursiveFields(fields: ValueOf<typeof schema>["fields"]) {
 
 
         if(typeof value === "object") {
-            console.log("OBJ", value)
 
             const subfields = value
 
@@ -42,19 +41,16 @@ function recursiveFields(fields: ValueOf<typeof schema>["fields"]) {
                 if(type === "enum") {
 
                     obj[key] = subfields["values"][0]
-                    console.log("ENUM", obj)
                     continue;
                 }
 
             }
 
 
-            console.log("SUB", key, subfields["fields"])
             const subProperties = recursiveFields(subfields["fields"])
             obj[key] = {}
 
             for(const subfield in subProperties) {
-                console.log(key, subfield, subProperties[subfield])
                 obj[key][subfield] = subProperties[subfield]
             }
 
@@ -64,7 +60,6 @@ function recursiveFields(fields: ValueOf<typeof schema>["fields"]) {
         obj[key] = DEFAULTS[value]
     }
 
-    console.log("FINISHED", obj)
 
     return obj
 }

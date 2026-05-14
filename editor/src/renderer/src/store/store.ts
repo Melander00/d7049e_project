@@ -1,5 +1,6 @@
 import type { Action, PayloadAction, ThunkAction } from '@reduxjs/toolkit'
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
+import { createDebounce } from '@renderer/lib/debounce'
 import { saveProject } from '@renderer/lib/project/project'
 import configReducer from './features/configSlice'
 import entitiesReducer from './features/entitiesSlice'
@@ -29,9 +30,13 @@ export const loadProjectAction = (state): PayloadAction => ({
 })
 
 
+const saveDebounce = createDebounce(() => {
+    saveProject()
+}, 500)
+
 // Auto-save feature
 store.subscribe(() => {
-    saveProject()
+    saveDebounce()
 })
 
 // Infer the type of `store`

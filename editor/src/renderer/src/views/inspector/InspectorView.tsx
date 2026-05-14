@@ -3,7 +3,7 @@ import styles from "./inspector.module.css";
 
 import schema from "@renderer/assets/components.schema.json";
 import { schemaCompToFields as schemaCompToObject } from "@renderer/lib/schema/schema";
-import { addComponent } from "../../store/features/entitiesSlice";
+import { addComponent, setEntityName } from "../../store/features/entitiesSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import EntityComponentElement from "./EntityComponentElement";
 
@@ -42,7 +42,9 @@ export default function InspectorView() {
     if(entity === null) return ""
     return(
         <div className={styles.container}>
-            <input value={entity.name} />
+            <input value={entity.name} onChange={e => {
+                dispatch(setEntityName({name: e.currentTarget.value, index: entityIndex}))
+            }} />
             <div 
                 className={styles['component-list']}
                 onDragOver={e => {
@@ -62,7 +64,7 @@ export default function InspectorView() {
                 }}
             >
 
-                {entity.components.map((c,i) => <EntityComponentElement index={i} key={c.class} component={c} />)}
+                {entity.components.map((c,i) => <EntityComponentElement index={i} key={`${entity.id}-${c.class}`} component={c} />)}
 
                 {showDrop ? (<>
                     <div className={styles['drop-component']}>

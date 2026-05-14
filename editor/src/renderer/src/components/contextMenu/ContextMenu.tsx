@@ -5,11 +5,12 @@ import styles from "./contextmenu.module.css"
 type Option = {
     text: string,
     value: string
+    onClick?: () => void
 }
 
 type ContextMenuProps = {
     options: Option[],
-    selectFn: (option: Option) => void
+    selectFn?: (option: Option) => void
 }
 
 export default function ContextMenu({
@@ -41,7 +42,8 @@ export default function ContextMenu({
             }}>
                 {options.map(op => (
                     <div className={styles.option} key={op.value} onClick={_ => {
-                        selectFn(op);
+                        if(op.onClick) op.onClick()
+                        if(selectFn) selectFn(op);
                         setShow(false)
                     }}>
                         {op.text}
