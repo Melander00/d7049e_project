@@ -3,5 +3,6 @@ export const Channels = {
     SAVE_FILE: "save",
     SAVE_REQUESTED: "save_requested",
     EXPORT_REQUESTED: "export_requested",
-    INITIAL_LOAD: "initial_load"
+    INITIAL_LOAD: "initial_load",
+    LOAD_GLTF: "load_gltf"
 }

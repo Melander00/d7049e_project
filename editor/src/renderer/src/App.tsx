@@ -1,5 +1,6 @@
 import { Channels } from "@shared/channels";
 import { useEffect } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import "./App.css";
 import { useIpc } from "./lib/ipc/hooks";
 import { ipcRenderer } from "./lib/ipc/ipcRenderer";
@@ -37,7 +38,11 @@ function App() {
         <>
         <div className="editor-grid">
             <div className="panel list"><EntityListView /></div>
-            <div className="panel scene"><SceneView/></div>
+            <div className="panel scene">
+                <ErrorBoundary fallback="Scene Canvas Error Occurred">
+                    <SceneView/>
+                </ErrorBoundary>
+            </div>
             <div className="panel inspector"><InspectorView/></div>
             <div className="panel components"><ComponentsView/></div>
             <div className="panel assets"><AssetManagerView/></div>

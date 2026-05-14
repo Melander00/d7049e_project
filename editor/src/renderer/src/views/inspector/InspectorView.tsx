@@ -53,11 +53,12 @@ export default function InspectorView() {
                         setShowDrop(true)
                     }
                 }}
-                onDragLeave={_e => {
+                onDragExit={_e => {
                     setShowDrop(false)
                 }}
                 onDrop={e => {
                     setShowDrop(false)
+                    if(!e.dataTransfer.types.includes("type/component")) return
                     const raw = e.dataTransfer.getData("application/json")
                     const json = JSON.parse(raw)
                     onComponentDrop(json.data)

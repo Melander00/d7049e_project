@@ -210,11 +210,12 @@ function PrimitiveField({
 
                     onDragOver={e => {
                         if(isString && e.dataTransfer.types.includes("type/asset")) {
-                            e.preventDefault()
                             e.stopPropagation()
+                            e.preventDefault()
                         }
                     }}
                     onDrop={e => {
+                        if(!(isString && e.dataTransfer.types.includes("type/asset"))) return
                         const raw = e.dataTransfer.getData("text/plain")
                         onChange(raw)
                     }}

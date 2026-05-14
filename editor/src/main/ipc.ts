@@ -22,4 +22,13 @@ export function initIpc() {
             loadProject(dir)
         }
     })
+
+    ipcMain.handle(Channels.LOAD_GLTF, async (ev, assetPath) => {
+        const fp = path.join(getProjectDir(), assetPath)
+        const buffer = await fs.readFile(fp)
+        return buffer.buffer.slice(
+            buffer.byteOffset,
+            buffer.byteOffset + buffer.byteLength
+        )
+    })
 }
