@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "./inspector.module.css";
 
 import schema from "@renderer/assets/components.schema.json";
+import { schemaCompToFields as schemaCompToObject } from "@renderer/lib/schema/schema";
 import { addComponent } from "../../store/features/entitiesSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
@@ -21,12 +22,18 @@ export default function InspectorView() {
     const [showDrop, setShowDrop] = useState(false)
     
     const onComponentDrop = (type: keyof typeof schema) => {
+        if(!entity) return;
+
         const component = schema[type]
 
-        // TODO: create component and dispatch
+        // We enforce a single instance per component type
+        if(entity.components.find(e => e.class === component.class)) return
+
+        const comp = schemaCompToObject(component)
+
         dispatch(addComponent({
             index: entityIndex,
-            component: component
+            component: comp
         }))
         
     }

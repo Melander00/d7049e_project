@@ -9,13 +9,18 @@ const appReducer = combineReducers({
     config: configReducer
 })
 
-export const store = configureStore({
-  reducer: (state, action) => {
+export type AppReducerReturn = ReturnType<typeof appReducer>
+
+// @ts-ignore
+const rootReducer: typeof appReducer = (state, action) => {
     if(action.type === "project/load") {
         return action.payload
     }
     return appReducer(state, action)
-  }
+} 
+
+export const store = configureStore({
+  reducer: rootReducer
 })
 
 export const loadProjectAction = (state): PayloadAction => ({
