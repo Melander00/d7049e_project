@@ -1,0 +1,236 @@
+{
+    "collision": {
+        "type": "CollisionComponent",
+        "class": "com.example.brainslop.core.components.CollisionComponent",
+        "fields": {
+            "shape": {
+                "type": "CollisionShapeComponent",
+                "class": "com.example.brainslop.core.serialize.CollisionShapeComponent",
+                "fields": {
+                    "type": {
+                        "type": "enum",
+                        "values": [
+                            "CYLINDER",
+                            "BOX",
+                            "CAPSULE",
+                            "SPHERE"
+                        ]
+                    },
+                    "a": "float",
+                    "b": "float",
+                    "c": "float",
+                    "shapeName": "string"
+                }
+            },
+            "isTrigger": "boolean"
+        }
+    },
+    "transform": {
+        "type": "TransformComponent",
+        "class": "com.example.brainslop.core.components.TransformComponent",
+        "fields": {
+            "position": {
+                "type": "Vector3",
+                "class": "com.badlogic.gdx.math.Vector3",
+                "fields": {
+                    "x": "float",
+                    "y": "float",
+                    "z": "float"
+                }
+            },
+            "rotation": {
+                "type": "Quaternion",
+                "class": "com.badlogic.gdx.math.Quaternion",
+                "fields": {
+                    "x": "float",
+                    "y": "float",
+                    "z": "float",
+                    "w": "float"
+                }
+            },
+            "scale": {
+                "type": "Vector3",
+                "class": "com.badlogic.gdx.math.Vector3",
+                "fields": {
+                    "x": "float",
+                    "y": "float",
+                    "z": "float"
+                }
+            }
+        }
+    },
+    "health": {
+        "type": "HealthComponent",
+        "class": "com.example.brainslop.core.components.HealthComponent",
+        "fields": {
+            "currentHP": "float",
+            "maxHP": "float"
+        }
+    },
+    "pickup": {
+        "type": "PickupComponent",
+        "class": "com.example.brainslop.core.components.PickupComponent",
+        "fields": {
+            "pickupType": "string",
+            "value": "float",
+            "effectId": "string"
+        }
+    },
+    "freezerotation": {
+        "type": "FreezeRotationComponent",
+        "class": "com.example.brainslop.core.components.FreezeRotationComponent",
+        "fields": {
+            "freezeYaw": "boolean",
+            "freezePitch": "boolean",
+            "freezeRoll": "boolean"
+        }
+    },
+    "autoshooter": {
+        "type": "AutoShooterComponent",
+        "class": "com.example.brainslop.core.components.AutoShooterComponent",
+        "fields": {
+            "shotsPerSecond": "float",
+            "timeSinceLastShot": "float"
+        }
+    },
+    "physics": {
+        "type": "PhysicsComponent",
+        "class": "com.example.brainslop.core.components.PhysicsComponent",
+        "fields": {
+            "mass": "float",
+            "shape": {
+                "type": "CollisionShapeComponent",
+                "class": "com.example.brainslop.core.serialize.CollisionShapeComponent",
+                "fields": {
+                    "type": {
+                        "type": "enum",
+                        "values": [
+                            "CYLINDER",
+                            "BOX",
+                            "CAPSULE",
+                            "SPHERE"
+                        ]
+                    },
+                    "a": "float",
+                    "b": "float",
+                    "c": "float",
+                    "shapeName": "string"
+                }
+            },
+            "hasGravity": "boolean"
+        }
+    },
+    "input": {
+        "type": "InputComponent",
+        "class": "com.example.brainslop.core.components.InputComponent",
+        "fields": {
+            "axisX": "float",
+            "axisY": "float",
+            "action1": "boolean",
+            "action2": "boolean"
+        }
+    },
+    "lifetime": {
+        "type": "LifetimeComponent",
+        "class": "com.example.brainslop.core.components.LifetimeComponent",
+        "fields": {
+            "timeLived": "float",
+            "maxTimeAlive": "float"
+        }
+    },
+    "gate": {
+        "type": "GateComponent",
+        "class": "com.example.brainslop.core.components.GateComponent",
+        "fields": {
+            "open": "boolean"
+        }
+    },
+    "camera": {
+        "type": "CameraComponent",
+        "class": "com.example.brainslop.core.components.CameraComponent",
+        "fields": {
+            "enabled": "boolean",
+            "fov": "float",
+            "near": "float",
+            "far": "float"
+        }
+    },
+    "player": {
+        "type": "PlayerComponent",
+        "class": "com.example.brainslop.core.components.PlayerComponent",
+        "fields": {
+            
+        }
+    },
+    "text": {
+        "type": "TextComponent",
+        "class": "com.example.brainslop.core.components.TextComponent",
+        "fields": {
+            "offsetPosition": {
+                "type": "Vector3",
+                "class": "com.badlogic.gdx.math.Vector3",
+                "fields": {
+                    "x": "float",
+                    "y": "float",
+                    "z": "float"
+                }
+            },
+            "offsetRotation": {
+                "type": "Quaternion",
+                "class": "com.badlogic.gdx.math.Quaternion",
+                "fields": {
+                    "x": "float",
+                    "y": "float",
+                    "z": "float",
+                    "w": "float"
+                }
+            },
+            "text": "string",
+            "scale": "float",
+            "faceCamera": "boolean",
+            "cull": "boolean",
+            "centered": "boolean"
+        }
+    },
+    "model": {
+        "type": "ModelComponent",
+        "class": "com.example.brainslop.core.components.ModelComponent",
+        "fields": {
+            "assetPath": "string",
+            "requested": "boolean",
+            "addedToScene": "boolean"
+        }
+    },
+    "movement": {
+        "type": "MovementComponent",
+        "class": "com.example.brainslop.core.components.MovementComponent",
+        "fields": {
+            "movementSpeed": "float",
+            "moveDir": {
+                "type": "Vector3",
+                "class": "com.badlogic.gdx.math.Vector3",
+                "fields": {
+                    "x": "float",
+                    "y": "float",
+                    "z": "float"
+                }
+            }
+        }
+    },
+    "script": {
+        "type": "ScriptComponent",
+        "class": "com.example.brainslop.core.components.ScriptComponent",
+        "fields": {
+            "scriptPath": "string"
+        }
+    },
+    "agent": {
+        "type": "AgentComponent",
+        "class": "com.example.brainslop.core.components.AgentComponent",
+        "fields": {
+            "faction": "string",
+            "behaviorType": "string",
+            "currentState": "string"
+        }
+    }
+}

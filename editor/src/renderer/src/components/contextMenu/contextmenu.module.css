@@ -1,0 +1,19 @@
+.container {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    padding: 3px;
+    border: 1px solid var(--cm-border);
+    background: var(--cm-bg);
+    border-radius: 10px;
+}
+
+.option {
+    padding: 2px 40px 2px 20px;
+    border-radius: 7px;
+}
+
+.option:hover {
+    background: var(--cm-bg-hover);
+    cursor: pointer;
+}

@@ -10,6 +10,7 @@ build/resources/main/model/ground.glb
 build/resources/main/model/sahur.glb
 build/resources/main/model/soldier.glb
 config.json
+entities.jsonl
 glb-assets.json
 lua/test.lua
 model/bullet.glb
