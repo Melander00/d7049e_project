@@ -57,7 +57,7 @@ public class Main extends ApplicationAdapter {
         fileResolver = new ExternalAssetsResolver(".");
 
         assets = new Assets(new AssetManager(fileResolver));
-        sceneManager = new SceneManager();
+        sceneManager = new SceneManager(60);
         world = new World(sceneManager);
         world.setupCubeMap();
 
@@ -83,6 +83,7 @@ public class Main extends ApplicationAdapter {
                 new CameraSystem(sceneManager),
                 new ModelTransformSystem(), // Prepare models for rendering
                 new RenderSystem(sceneManager), // Renders models
+                new AnimationSystem(),
                 new TextRenderSystem(sceneManager), // Renders in-world text
                 new ProfilingSystem()
                 // HUDRenderSystem
@@ -97,6 +98,8 @@ public class Main extends ApplicationAdapter {
 //        printEntity(createCamera());
 //        printEntity(addPlayer());
 //        printEntity(addGround());
+        Entity player = addPlayer();
+        engine.addEntity(player);
 
         btWorld = physicsSystem.getWorld();
         debugDrawer = new DebugDrawer();
@@ -189,25 +192,6 @@ public class Main extends ApplicationAdapter {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private void printEntity(Entity entity) {
         GameObject obj = new GameObject();
         ImmutableArray<Component> comps = entity.getComponents();
@@ -274,6 +258,12 @@ public class Main extends ApplicationAdapter {
         freeze.freezePitch = true;
         freeze.freezeRoll = true;
         entity.add(freeze);
+
+        AnimationComponent anim = new AnimationComponent();
+        anim.currentAnimationId = "Armature|mixamo.com|Layer0"; // replace after checking logs
+        anim.loop = true;
+        anim.playbackSpeed = 1.0f;
+        entity.add(anim);
 
         return entity;
     }
