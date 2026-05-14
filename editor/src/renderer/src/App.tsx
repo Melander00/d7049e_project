@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import "./App.css";
 import { useIpc } from "./lib/ipc/hooks";
 import { ipcRenderer } from "./lib/ipc/ipcRenderer";
-import { saveProject } from "./lib/project/project";
+import { exportProject, saveProject } from "./lib/project/project";
 import { useAppDispatch } from "./store/hooks";
 import { loadProjectAction } from "./store/store";
 import AssetManagerView from "./views/asset-manager/AssetManagerView";
@@ -25,7 +25,7 @@ function App() {
     })
 
     useIpc(Channels.EXPORT_REQUESTED, () => {
-        
+        exportProject()
     })
 
     useEffect(() => {

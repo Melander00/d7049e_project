@@ -1,10 +1,12 @@
 import type { Action, PayloadAction, ThunkAction } from '@reduxjs/toolkit'
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { saveProject } from '@renderer/lib/project/project'
+import configReducer from './features/configSlice'
 import entitiesReducer from './features/entitiesSlice'
 
 const appReducer = combineReducers({
-    entities: entitiesReducer
+    entities: entitiesReducer,
+    config: configReducer
 })
 
 export const store = configureStore({

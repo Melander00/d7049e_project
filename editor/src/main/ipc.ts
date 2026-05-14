@@ -8,7 +8,11 @@ import { getProjectDir, loadProject } from "./editor";
 export function initIpc() {
     ipcMain.on(Channels.SAVE_FILE, async (_event, data: SaveData) => {
         const fp = path.join(getProjectDir(), ...data.filepath)
-        fs.writeFile(fp, data.data)
+        try {
+            await fs.writeFile(fp, data.data)
+        } catch(e) {
+            console.error(e)
+        }
     }) 
 
 
