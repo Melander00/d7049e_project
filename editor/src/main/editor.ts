@@ -1,14 +1,25 @@
 import { Channels } from "@shared/channels";
-import { app, dialog } from "electron";
+import { app, type BrowserWindow, dialog } from "electron";
 import fs from "fs";
 import path from "path";
 import { getMainWindow } from ".";
+import { setLastDirConfig } from "./config";
 
 let projectDir: string = app.getAppPath()
+
+export function updateTitle(win: BrowserWindow) {
+    win.setTitle(`Mobile Slop Editor - ${projectDir}`)
+}
 
 export function setProjectDir(dir: string) {
     console.log("Project dir set to:", dir)
     projectDir = dir;
+    setLastDirConfig(dir)
+    
+    const win = getMainWindow()
+    if(win) {
+        updateTitle(win)
+    }
 }
 
 export function getProjectDir() {
@@ -59,3 +70,4 @@ export async function exportProject() {
     const win = getMainWindow()
     win?.webContents.send(Channels.EXPORT_REQUESTED)
 }
+
