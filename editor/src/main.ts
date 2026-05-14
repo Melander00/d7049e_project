@@ -1,12 +1,18 @@
-import electron from "electron";
-const { app, BrowserWindow } = electron;
+import { app, BrowserWindow } from "electron";
+import path from "node:path";
+import { isProd, srcDir } from "./env.js";
+import { menu } from "./menu.js";
+// const { app, BrowserWindow } = electron;
 
-const isProd = process.env["NODE_ENV"] === "production";
+
 
 const createWindow = () => {
     const win = new BrowserWindow({
-        width: 1200,
-        height: 800,
+        width: 1920,
+        height: 1080,
+        webPreferences: {
+            preload: path.join(srcDir, "preload.js")
+        }
     });
 
     if (isProd) {
@@ -14,6 +20,8 @@ const createWindow = () => {
     } else {
         win.loadURL("http://localhost:5173")
     }
+
+    win.setMenu(menu)
 };
 
 app.whenReady().then(() => {

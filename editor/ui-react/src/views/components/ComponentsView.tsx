@@ -14,7 +14,9 @@ export default function ComponentsView() {
         <>
         <div className={styles.container}>
             <div className={styles['component-list']}>
-                {components.map(e => <Component key={e.type} name={e.type} id={e.key} />)}
+                {components.sort((a,b) => {
+                    return a.type.localeCompare(b.type)
+                }).map(e => <Component key={e.type} name={e.type} id={e.key} />)}
             </div>
         </div>
         </>

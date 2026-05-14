@@ -10,8 +10,8 @@
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
+    // "noUncheckedSideEffectImports": true,
+    // "moduleDetection": "force",
 
     "moduleResolution": "nodenext"
   },
