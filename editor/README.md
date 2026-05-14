@@ -1,28 +1,34 @@
-# Development
+# editor
 
-For the ui we use Vite + React and Electron as the runtime. 
-For development first start the vite server
+An Electron application with React and TypeScript
 
-```bash
-npm run ui
-```
+## Recommended IDE Setup
 
-Start a typescript compiler with 
+- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
-```bash
-npm run watch
-```
+## Project Setup
 
-Run the electron application with:
+### Install
 
 ```bash
-npm run dev
+$ npm install
 ```
 
-Note that it starts nodemon which watches for reload. For testing, instead start with 
+### Development
 
 ```bash
-npm run start
+$ npm run dev
 ```
 
-Otherwise you will lose state whenever you save a file.
+### Build
+
+```bash
+# For windows
+$ npm run build:win
+
+# For macOS
+$ npm run build:mac
+
+# For Linux
+$ npm run build:linux
+```
