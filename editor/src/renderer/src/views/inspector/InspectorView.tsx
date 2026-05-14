@@ -5,6 +5,7 @@ import schema from "@renderer/assets/components.schema.json";
 import { schemaCompToFields as schemaCompToObject } from "@renderer/lib/schema/schema";
 import { addComponent } from "../../store/features/entitiesSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import EntityComponentElement from "./EntityComponentElement";
 
 export default function InspectorView() {
 
@@ -41,7 +42,7 @@ export default function InspectorView() {
     if(entity === null) return ""
     return(
         <div className={styles.container}>
-            <h1>inspector</h1>
+            <input value={entity.name} />
             <div 
                 className={styles['component-list']}
                 onDragOver={e => {
@@ -61,8 +62,7 @@ export default function InspectorView() {
                 }}
             >
 
-                <pre>{JSON.stringify(entity, null, 2)}</pre>
-
+                {entity.components.map((c,i) => <EntityComponentElement index={i} key={c.class} component={c} />)}
 
                 {showDrop ? (<>
                     <div className={styles['drop-component']}>

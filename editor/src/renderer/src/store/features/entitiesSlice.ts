@@ -64,6 +64,28 @@ export const entitiesSlice = createSlice({
         addComponent: (state, action: PayloadAction<{index: number, component: EntityComponent}>) => {
             state.entities[action.payload.index].components.push(action.payload.component)
         },
+        updateComponent: (
+            state,
+            action: PayloadAction<{
+                index: number,
+                componentIndex: number,
+                path: string[],
+                value: any
+            }>
+        ) => {
+
+            const component = state.entities[action.payload.index].components[action.payload.componentIndex]
+
+            let target: any = component
+
+            for(let i = 0; i < action.payload.path.length - 1; i++) {
+                target = target[action.payload.path[i]]
+            }
+
+            const finalKey = action.payload.path[action.payload.path.length - 1]
+
+            target[finalKey] = action.payload.value
+        },
         removeComponent: (state, action: PayloadAction<{index: number, componentIndex: number}>) => {
             state.entities[action.payload.index].components.splice(action.payload.componentIndex, 1)
         }
@@ -78,6 +100,7 @@ export const {
     setEntityTag,
     setActiveEntity,
     addComponent,
+    updateComponent,
     removeComponent
 } = entitiesSlice.actions
 export default entitiesSlice.reducer
