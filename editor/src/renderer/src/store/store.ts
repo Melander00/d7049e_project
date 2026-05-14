@@ -1,11 +1,30 @@
-import type { Action, ThunkAction } from '@reduxjs/toolkit'
-import { configureStore } from '@reduxjs/toolkit'
+import type { Action, PayloadAction, ThunkAction } from '@reduxjs/toolkit'
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
+import { saveProject } from '@renderer/lib/project/project'
 import entitiesReducer from './features/entitiesSlice'
 
-export const store = configureStore({
-  reducer: {
+const appReducer = combineReducers({
     entities: entitiesReducer
+})
+
+export const store = configureStore({
+  reducer: (state, action) => {
+    if(action.type === "project/load") {
+        return action.payload
+    }
+    return appReducer(state, action)
   }
+})
+
+export const loadProjectAction = (state): PayloadAction => ({
+    type: "project/load",
+    payload: state
+})
+
+
+// Auto-save feature
+store.subscribe(() => {
+    saveProject()
 })
 
 // Infer the type of `store`

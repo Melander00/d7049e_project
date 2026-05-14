@@ -1,6 +1,6 @@
 import type { MenuItem, MenuItemConstructorOptions } from "electron";
 import { Menu } from "electron";
-import { openProject, saveProject } from "./editor";
+import { exportProject, openProject, saveProject } from "./editor";
 import { isProd } from "./env";
 
 const template: (MenuItemConstructorOptions | MenuItem)[] = [
@@ -15,7 +15,13 @@ const template: (MenuItemConstructorOptions | MenuItem)[] = [
             {
                 label: "Save",
                 accelerator: "Ctrl+S",
-                click: saveProject
+                click: saveProject,
+                enabled: false,
+            },
+            {
+                label: "Export",
+                accelerator: "Ctrl+E",
+                click: exportProject
             },
             { role: "quit" }
         ]

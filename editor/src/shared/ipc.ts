@@ -1,4 +1,4 @@
 export interface SaveData {
-    filepath: string,
+    filepath: string[],
     data: string
 }

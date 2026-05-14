@@ -63,7 +63,7 @@ function EntityComponent({ entity, index, contextMenu }: EntityProps) {
         <>
             <div 
                 className={[styles.entity, isActive ? styles.active : ""].join(" ")} 
-                onClick={(e) => {
+                onClick={() => {
                     dispatch(setActiveEntity(index))
                 }}
                 onContextMenu={e => {
