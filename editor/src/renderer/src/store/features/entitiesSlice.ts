@@ -1,10 +1,15 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 
+export interface EntityComponent {
+    class: string,
+    [field: string]: any
+}
+
 export interface Entity {
     id: string,
     name: string,
     tag: string,
-    components: any[]
+    components: EntityComponent[]
 }
 
 function newEntity(): Entity {
@@ -56,7 +61,7 @@ export const entitiesSlice = createSlice({
         setActiveEntity: (state, action: PayloadAction<number>) => {
             state.activeIndex = action.payload
         },
-        addComponent: (state, action: PayloadAction<{index: number, component: any}>) => {
+        addComponent: (state, action: PayloadAction<{index: number, component: EntityComponent}>) => {
             state.entities[action.payload.index].components.push(action.payload.component)
         },
         removeComponent: (state, action: PayloadAction<{index: number, componentIndex: number}>) => {
