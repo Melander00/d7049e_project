@@ -1,0 +1,30 @@
+.container {
+    overflow-y: auto;
+}
+
+.component-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 25px;
+    width: 100%;
+}
+
+.component {
+    width: 200px;
+    height: 50px;
+    overflow: hidden;
+    /* border: 1px solid var(--accent); */
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    user-select: none;
+}
+
+.component:hover {
+    cursor: grab;
+    background: black;
+    transition: background 0.2s ease;
+}
