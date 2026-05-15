@@ -66,7 +66,7 @@ export default function InspectorView() {
                         setShowDrop(true)
                     }
                 }}
-                onDragExit={_e => {
+                onDragLeave={_e => {
                     setShowDrop(false)
                 }}
                 onDrop={e => {

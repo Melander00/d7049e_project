@@ -131,7 +131,9 @@ export default function SceneView() {
                     <GizmoViewport />
                 </GizmoHelper>
 
-                {entities.map((entity, index) => (
+                {entities.filter(e => e.components.find(
+                    (c: any) => c.class === CLASS.transform
+                ) !== null).map((entity, index) => (
                     <EntityRenderer
                         key={entity.id}
                         entity={entity}
@@ -173,7 +175,7 @@ function EntityRenderer({
         (c: any) => c.class === CLASS.transform
     )
 
-    if(!transform) return null
+    // if(!transform) return null
 
     const model = entity.components.find(
         (c: any) => c.class === CLASS.model

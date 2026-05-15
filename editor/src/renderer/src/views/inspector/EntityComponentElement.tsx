@@ -184,6 +184,8 @@ function PrimitiveField({
 
     const isString = type === "string"
 
+    const [show, setShow] = useState(false)
+
     return(
         <div className={styles.fieldRow}>
 
@@ -208,16 +210,28 @@ function PrimitiveField({
                             : "number"
                     }
 
+                    style={{
+                        background: show ? "green" : "inherit"
+                    }}
+
                     onDragOver={e => {
                         if(isString && e.dataTransfer.types.includes("type/asset")) {
                             e.stopPropagation()
                             e.preventDefault()
+                            setShow(true)
                         }
                     }}
                     onDrop={e => {
                         if(!(isString && e.dataTransfer.types.includes("type/asset"))) return
-                        const raw = e.dataTransfer.getData("text/plain")
+                        const raw = e.dataTransfer.getData("text/path")
+                        setShow(false)
                         onChange(raw)
+                    }}
+                    onDragLeave={(e) => {
+                        if(isString && e.dataTransfer.types.includes("type/asset")) { 
+                            setShow(false)
+                            console.log("LEFT", show)
+                        }
                     }}
 
                     step={type === "float" ? "any" : 1}
