@@ -42,7 +42,7 @@ export default function EntityComponentElement({
 
     const Menu = ContextMenu({
         options: [
-            { text: "Delete Component", value: "delete", onClick: () => {
+            { text: "Delete Component", value: "delete", icon: "delete", onClick: () => {
                 dispatch(removeComponent({index: entityIndex, componentIndex: index}))
             } }
         ],

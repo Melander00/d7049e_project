@@ -31,7 +31,16 @@
 
 .tagName {
     white-space: nowrap;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    gap: 5px;
 }
+
 
 .entities {
     display: flex;

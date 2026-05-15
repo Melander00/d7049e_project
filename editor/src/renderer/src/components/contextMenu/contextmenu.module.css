@@ -6,11 +6,31 @@
     border: 1px solid var(--cm-border);
     background: var(--cm-bg);
     border-radius: 10px;
+    z-index: 1000;
 }
 
 .option {
-    padding: 2px 40px 2px 20px;
+    padding: 3px 40px 3px 3px;
     border-radius: 7px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3px;
+}
+
+.icon {
+    min-width: 20px;
+    min-height: 20px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overlay: hidden;
+    vertical-align: middle;
+}
+
+.text {
+
 }
 
 .option:hover {

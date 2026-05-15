@@ -1,11 +1,13 @@
 type IconProps = {
-    children: React.ReactNode
+    children: React.ReactNode,
+    className?: string
 }
 
 export default function Icon({
-    children
+    children,
+    className
 }: IconProps) {
     return(
-        <span className="material-symbols-outlined">{children}</span>
+        <span className={["material-symbols-outlined", className ?? ""].join(" ")}>{children}</span>
     )
 }

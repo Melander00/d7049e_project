@@ -4,5 +4,7 @@ export const Channels = {
     SAVE_REQUESTED: "save_requested",
     EXPORT_REQUESTED: "export_requested",
     INITIAL_LOAD: "initial_load",
-    LOAD_GLTF: "load_gltf"
+    LOAD_GLTF: "load_gltf",
+    ASSET_CHANGE: "asset_change",
+    ASSETS: "assets"
 }

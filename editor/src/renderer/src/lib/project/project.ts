@@ -26,7 +26,6 @@ export async function exportProject() {
     const entitiesJson: string[] = []
 
     state.entities.entities.forEach((entity) => {
-        console.log(entity)
         const components = entity.components;
         components.forEach((comp) => {
 

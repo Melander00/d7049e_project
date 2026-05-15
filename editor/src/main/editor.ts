@@ -3,6 +3,7 @@ import { app, type BrowserWindow, dialog } from "electron";
 import fs from "fs";
 import path from "path";
 import { getMainWindow } from ".";
+import { sendAssets, startWatch } from "./assets";
 import { setLastDirConfig } from "./config";
 
 let projectDir: string = app.getAppPath()
@@ -15,10 +16,13 @@ export function setProjectDir(dir: string) {
     console.log("Project dir set to:", dir)
     projectDir = dir;
     setLastDirConfig(dir)
+
+    startWatch(dir)
     
     const win = getMainWindow()
     if(win) {
         updateTitle(win)
+        sendAssets(dir, win)
     }
 }
 

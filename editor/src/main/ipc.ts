@@ -4,6 +4,8 @@ import { ipcMain } from "electron";
 import { existsSync } from "fs";
 import fs from "fs/promises";
 import path from "path";
+import { getMainWindow } from ".";
+import { sendAssets } from "./assets";
 import { getProjectDir, loadProject } from "./editor";
 
 export function initIpc() {
@@ -17,10 +19,11 @@ export function initIpc() {
     }) 
 
 
-    ipcMain.on(Channels.INITIAL_LOAD, () => {
+    ipcMain.on(Channels.INITIAL_LOAD, (ev) => {
         const dir = getProjectDir()
         if(dir) {
             loadProject(dir)
+            sendAssets(dir, getMainWindow())
         }
     })
 

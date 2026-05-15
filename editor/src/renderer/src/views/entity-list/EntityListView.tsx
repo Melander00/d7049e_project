@@ -1,5 +1,6 @@
-import type { MouseEvent } from "react";
+import { useState, type MouseEvent } from "react";
 
+import Icon from "@renderer/components/icon/Icon";
 import ContextMenu from "../../components/contextMenu/ContextMenu";
 import { createEntity, duplicateEntity, removeEntity, setActiveEntity, type Entity } from "../../store/features/entitiesSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
@@ -17,9 +18,9 @@ export default function EntityListView() {
 
     const menu = ContextMenu({
         options: [
-            { text: "Create Entity", value: "create" },
-            { text: "Delete Entity", value: "delete" },
-            { text: "Duplicate Entity", value: "duplicate" },
+            { text: "Create Entity", value: "create", icon: "add" },
+            { text: "Delete Entity", value: "delete", icon: "delete" },
+            { text: "Duplicate Entity", value: "duplicate", icon: "content_copy" },
         ],
         selectFn: (option) => {
             switch (option.value) {
@@ -66,8 +67,8 @@ export default function EntityListView() {
     return (
         <>
             {menu.element}
-            <div className={styles.container}>
-                <div className={styles.groups} onContextMenu={onRightClick}>
+            <div className={styles.container} onContextMenu={onRightClick}>
+                <div className={styles.groups}>
                     {...groups}
                     {/* {entities.map((e, i) => (
                         <EntityComponent key={e.id} index={i} entity={e} />
@@ -90,6 +91,8 @@ function EntityGroup({
 
     const dispatch = useAppDispatch();
 
+    const [collapsed, setCollapsed] = useState(false)
+
     const menu = ContextMenu({
         options: [
             { text: `Create Entity with tag ${tagName}`, value: "create", onClick: () => {
@@ -109,11 +112,14 @@ function EntityGroup({
         <div className={styles.group}>
             {tagName === "" ? "" : (
                 <div onContextMenu={onRightClick} className={styles.tag}>
-                    <span className={styles.tagName}>{tagName}</span>
+                    <div className={styles.tagName} onClick={() => setCollapsed(f => !f)}>
+                        <Icon>{collapsed ? "arrow_drop_up" : "arrow_drop_down"}</Icon>
+                        <span>{tagName}</span>
+                    </div>
                 </div>
             )}
             <div className={styles.entities}>
-                {entities.map((e) => (
+                {collapsed ? "" : entities.map((e) => (
                     <EntityComponent key={e.entity.id} index={e.index} entity={e.entity} />
                 ))}
             </div>

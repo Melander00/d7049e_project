@@ -1,11 +1,13 @@
 
 import { useState } from "react"
+import Icon from "../icon/Icon"
 import styles from "./contextmenu.module.css"
 
 type Option = {
     text: string,
     value: string
-    onClick?: () => void
+    onClick?: () => void,
+    icon?: string,
 }
 
 type ContextMenuProps = {
@@ -46,7 +48,8 @@ export default function ContextMenu({
                         if(selectFn) selectFn(op);
                         setShow(false)
                     }}>
-                        {op.text}
+                        <Icon>{op.icon ?? (<>&nbsp;</>)}</Icon>
+                        <span>{op.text}</span>
                     </div>
                 ))}
             </div>
