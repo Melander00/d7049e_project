@@ -5,11 +5,41 @@
     flex-direction: column;
 }
 
+.groups {
+    display: flex;
+    flex-direction: column;
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+}
+
+.tag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.tag::before, .tag::after {
+    content: "";
+    width: 30%;
+    height: 1px;
+    background-color: var(--accent);
+}
+
+.tagName {
+    white-space: nowrap;
+}
+
 .entities {
     display: flex;
     flex-direction: column;
     gap: 15px;
     flex: 1;
+    border-left: 1px solid var(--accent);
+    padding-left: 15px;
 }
 
 .entity {

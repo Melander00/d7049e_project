@@ -3,7 +3,7 @@ import styles from "./inspector.module.css";
 
 import schema from "@renderer/assets/components.schema.json";
 import { schemaCompToFields as schemaCompToObject } from "@renderer/lib/schema/schema";
-import { addComponent, setEntityName } from "../../store/features/entitiesSlice";
+import { addComponent, setEntityName, setEntityTag } from "../../store/features/entitiesSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import EntityComponentElement from "./EntityComponentElement";
 
@@ -42,9 +42,22 @@ export default function InspectorView() {
     if(entity === null) return ""
     return(
         <div className={styles.container}>
-            <input value={entity.name} onChange={e => {
-                dispatch(setEntityName({name: e.currentTarget.value, index: entityIndex}))
-            }} />
+            <div className={styles['entity-header']}>
+                <label className={styles['entity-header-label']}>
+                    <span>Name</span>
+
+                    <input value={entity.name} onChange={e => {
+                        dispatch(setEntityName({name: e.currentTarget.value, index: entityIndex}))
+                    }} />
+                </label>
+                <label className={styles['entity-header-label']}>
+                    <span>Tag</span>
+                    <input value={entity.tag} onChange={e => {
+                        dispatch(setEntityTag({index: entityIndex, tag: e.currentTarget.value}))
+                    }} />
+                </label>
+
+            </div>
             <div 
                 className={styles['component-list']}
                 onDragOver={e => {

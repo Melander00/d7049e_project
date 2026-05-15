@@ -13,6 +13,18 @@
     box-sizing: border-box;
 }
 
+.entity-header {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.entity-header-label {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
 .component-list {
     display: flex;
     flex-direction: column;

@@ -94,7 +94,7 @@ export default function SceneView() {
                     position: [8, 8, 8],
                     fov: 60
                 }}
-                onPointerMissed={e => {
+                onPointerMissed={_e => {
                     dispatch(setActiveEntity(-1))
                 }}
             >
@@ -295,16 +295,20 @@ function EntityRenderer({
                     />
                 )}
 
-                {/* Text */}
+                
+
+            </group>
+
+            {/* Text */}
 
                 {text && (
                     <Text
                         position={[
-                            text.offsetPosition.x,
-                            text.offsetPosition.y,
-                            text.offsetPosition.z
+                            transform.position.x + text.offsetPosition.x,
+                            transform.position.y + text.offsetPosition.y,
+                            transform.position.z + text.offsetPosition.z
                         ]}
-                        fontSize={text.scale * 0.1}
+                        fontSize={text.scale * 1}
                         anchorX={
                             text.centered
                                 ? "center"
@@ -314,8 +318,6 @@ function EntityRenderer({
                         {text.text}
                     </Text>
                 )}
-
-            </group>
 
             {/* Transform Controls */}
 
@@ -328,11 +330,11 @@ function EntityRenderer({
                         e.stopPropagation()
                     }}
 
-                    onMouseUp={e => {
+                    onMouseUp={_e => {
                         setDragging(false)
                     }}
 
-                    onMouseDown={e => {
+                    onMouseDown={_e => {
                         setDragging(true)
                     }}
 

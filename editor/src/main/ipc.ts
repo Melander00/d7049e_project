@@ -1,6 +1,7 @@
 import { Channels } from "@shared/channels";
 import type { SaveData } from "@shared/ipc";
 import { ipcMain } from "electron";
+import { existsSync } from "fs";
 import fs from "fs/promises";
 import path from "path";
 import { getProjectDir, loadProject } from "./editor";
@@ -24,7 +25,12 @@ export function initIpc() {
     })
 
     ipcMain.handle(Channels.LOAD_GLTF, async (ev, assetPath) => {
+        if(!assetPath) return null;
+
         const fp = path.join(getProjectDir(), assetPath)
+
+        if(!existsSync(fp)) return null;
+
         const buffer = await fs.readFile(fp)
         return buffer.buffer.slice(
             buffer.byteOffset,

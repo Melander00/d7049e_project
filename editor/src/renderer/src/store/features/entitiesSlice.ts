@@ -36,15 +36,20 @@ export const entitiesSlice = createSlice({
     name: "entities",
     initialState,
     reducers: {
-        createEntity: state => {
-            state.entities.push(newEntity())
+        createEntity: (state, action: PayloadAction<{tag?: string}>) => {
+
+            const entity = newEntity()
+            if(action.payload.tag) entity.tag = action.payload.tag
+
+            state.entities.push(entity)
             state.activeIndex = state.entities.length - 1
         },
         removeEntity: (state, action: PayloadAction<number>) => {
             state.entities.splice(action.payload, 1)
-            if(state.activeIndex > state.entities.length - 1) {
-                state.activeIndex = state.entities.length - 1
-            }
+            state.activeIndex = -1
+            // if(state.activeIndex > state.entities.length - 1) {
+            //     state.activeIndex = state.entities.length - 1
+            // }
         },
         duplicateEntity: (state, action: PayloadAction<number>) => {
             const entity = state.entities[action.payload]
