@@ -1,27 +1,30 @@
-import Icon from "@renderer/components/icon/Icon"
-import { useIpc } from "@renderer/lib/ipc/hooks"
-import { Channels } from "@shared/channels"
-import { Asset } from "@shared/ipc"
-import { useState } from "react"
-import styles from "./assetmanager.module.css"
+import ContextMenu from '@renderer/components/contextMenu/ContextMenu'
+import Icon from '@renderer/components/icon/Icon'
+import { useIpc } from '@renderer/lib/ipc/hooks'
+import { ipcRenderer } from '@renderer/lib/ipc/ipcRenderer'
+import { getLuaTemplate } from '@renderer/lib/lua/lua'
+import { Channels } from '@shared/channels'
+import { Asset, CreateFileRequest, RenameRequest } from '@shared/ipc'
+import { useEffect, useState } from 'react'
+import styles from './assetmanager.module.css'
 
 type File = {
-    name: string,
+    name: string
     isDir: false
-    path: string,
+    path: string
 }
 
 type Folder = {
-    name: string,
-    isDir: true,
-    files: Node[],
+    name: string
+    isDir: true
+    files: Node[]
     path: string
 }
 
 type Node = Folder | File
 
 type FolderStruct = {
-    name: string,
+    name: string
     files: {
         [name: string]: string | FolderStruct
     }
@@ -29,20 +32,20 @@ type FolderStruct = {
 
 function flattenStruct(folder: FolderStruct, dir: string): Node[] {
     const nodes: Node[] = []
-    for(const key in folder.files) {
+    for (const key in folder.files) {
         const val = folder.files[key]
-        if(typeof val === "string") {
+        if (typeof val === 'string') {
             nodes.push({
                 name: val,
                 path: dir,
-                isDir: false,
+                isDir: false
             })
         } else {
             nodes.push({
                 name: val.name,
                 path: dir,
                 isDir: true,
-                files: flattenStruct(val, dir + val.name + "/")
+                files: flattenStruct(val, dir + val.name + '/')
             })
         }
     }
@@ -50,43 +53,40 @@ function flattenStruct(folder: FolderStruct, dir: string): Node[] {
 }
 
 function createTree(assets: Asset[]) {
-
     const root: FolderStruct = {
-        name: "",
+        name: '',
         files: {}
     }
 
     // loop through to find all directories
 
-    for(let i = 0; i < assets.length; i++) {
+    for (let i = 0; i < assets.length; i++) {
         const asset = assets[i]
 
-        if(!asset.isDir) continue;
+        if (!asset.isDir) continue
 
-        const subpaths = asset.path.split("/")
+        const subpaths = asset.path.split('/')
         let folder = root.files
-        for(const subpath of subpaths) {
+        for (const subpath of subpaths) {
+            if (!folder[subpath]) folder[subpath] = { name: subpath, files: {} }
 
-            if(!folder[subpath]) folder[subpath] = {name: subpath, files: {}}
-
-            if(typeof folder[subpath] === "object")
-                folder = folder[subpath].files
+            if (typeof folder[subpath] === 'object') folder = folder[subpath].files
         }
     }
 
-    for(let i = 0; i < assets.length; i++) {
+    for (let i = 0; i < assets.length; i++) {
         const asset = assets[i]
 
-        if(asset.isDir) continue;
+        if (asset.isDir) continue
 
-        const splitted = asset.path.split("/")
-        const subpaths = splitted.slice(0, splitted.length-1)
-        const name = splitted[splitted.length-1]
+        const splitted = asset.path.split('/')
+        const subpaths = splitted.slice(0, splitted.length - 1)
+        const name = splitted[splitted.length - 1]
         let folder = root.files
-        for(const subpath of subpaths) {
+        for (const subpath of subpaths) {
             // if(!folder[subpath]) folder[subpath] = {name: subpath, files: {}}
 
-            if(typeof folder[subpath] === "object") {
+            if (typeof folder[subpath] === 'object') {
                 folder = folder[subpath].files
             }
         }
@@ -97,10 +97,11 @@ function createTree(assets: Asset[]) {
 }
 
 export default function AssetManagerView() {
-
     const [assets, setAssets] = useState<Asset[]>([])
 
     const [currPath, setCurrPath] = useState<string[]>([])
+
+    const [selectedFile, setSelectedPath] = useState('')
 
     useIpc(Channels.ASSETS, (_ev, assets: Asset[]) => {
         setAssets(assets)
@@ -109,107 +110,236 @@ export default function AssetManagerView() {
     const root = createTree(assets)
 
     let curr = root
-    let dir = ""
-    for(const p of currPath) {
-        if(typeof curr.files[p] === "object") {
+    let dir = ''
+    for (const p of currPath) {
+        if (typeof curr.files[p] === 'object') {
             curr = curr.files[p]
-            dir = dir + p + "/"
+            dir = dir + p + '/'
         }
     }
     const nodes = flattenStruct(curr, dir)
 
     const enterFolder = (name: string) => {
-        setCurrPath(paths => {
+        setCurrPath((paths) => {
             return [...paths, name]
         })
+        setSelectedPath("")
     }
 
-    return(
-        <>
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <span onClick={e => {
-                    setCurrPath(paths => {
-                        if(paths.length > 0) {
-                            const newPaths = [...paths]
-                            newPaths.pop()
-                            return newPaths
-                        }
-                        return paths
-                    })
-                }} className={styles['back-button']}><Icon>arrow_left</Icon></span>
-                <span className={styles.dirpath}>{currPath.join("/") ?? <>&nbsp;</>}</span>
-            </div>
+    const menu = ContextMenu({
+        options: [
+            {
+                text: 'Create Folder',
+                value: 'create-folder',
+                icon: 'create_new_folder',
+                onClick: () => {
+                    ipcRenderer.send(Channels.CREATE_FOLDER, currPath)
+                }
+            },
+            {
+                text: "Create Script",
+                value: "create-script",
+                icon: "code",
+                onClick: () => {
+                    const data: CreateFileRequest = {
+                        path: currPath,
+                        filename: "script.lua",
+                        content: getLuaTemplate()
+                    }
+                    ipcRenderer.send(Channels.CREATE_FILE, data)
+                }
+            }
+        ]
+    })
 
-            <div className={styles.nodes}>
-                {nodes.map(e => (
-                    <NodeElement 
-                    node={e} 
-                    key={e.path + "/" + e.name} 
-                    currentFolder={currPath.join("/")}
-                    enterFolder={enterFolder}
-                    />
-                ))}
+    return (
+        <>
+            {menu.element}
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <span
+                        onClick={(e) => {
+                            setCurrPath((paths) => {
+                                if (paths.length > 0) {
+                                    const newPaths = [...paths]
+                                    newPaths.pop()
+                                    return newPaths
+                                }
+                                return paths
+                            })
+                        }}
+                        className={styles['back-button']}
+                    >
+                        <Icon>arrow_left</Icon>
+                    </span>
+                    <span className={styles.dirpath}>{currPath.join('/') ?? <>&nbsp;</>}</span>
+                </div>
+
+                <div
+                    className={styles.nodes}
+                    onContextMenu={(e) => {
+                        menu.show(e.clientX, e.clientY)
+                    }}
+                    onClick={e => {
+                        e.stopPropagation()
+                        setSelectedPath("")
+                    }}
+                >
+                    {nodes.map((e) => (
+                        <NodeElement
+                            node={e}
+                            id={e.path + '/' + e.name}
+                            key={e.path + '/' + e.name}
+                            currentFolder={currPath.join('/')}
+                            enterFolder={enterFolder}
+                            setSelected={setSelectedPath}
+                            selected={selectedFile === e.path + '/' + e.name}
+                        />
+                    ))}
+                </div>
             </div>
-        </div>
         </>
     )
 }
 
 function getIconByExtension(ext: string) {
-    switch(ext) {
-        case "prefab":
-            return "architecture"
-        case "glb":
-            return "3d"
+    switch (ext) {
+        case 'prefab':
+            return 'architecture'
+        case 'glb':
+            return '3d'
+        case "lua":
+            return "code"
         default:
-            return "file"
+            return 'docs'
     }
 }
 
 type NodeElementProps = {
-    node: Node,
+    node: Node
     currentFolder: string
     enterFolder: (name: string) => void
+    id: string
+    selected: boolean
+    setSelected: (id: string) => void
 }
 
-function NodeElement({
-    node,
-    enterFolder
-}: NodeElementProps) {
+function NodeElement({ node, enterFolder, id, selected, setSelected }: NodeElementProps) {
+    const [isRenaming, setRenaming] = useState(false)
+    const [name, setName] = useState(node.name)
 
-    if(!node.isDir) {
-        const names = node.name.split(".")
-        const ext = names[names.length-1]
+    const menu = ContextMenu({
+        options: [
+            {
+                text: 'Rename',
+                value: 'rename',
+                icon: 'edit',
+                onClick: () => {
+                    setRenaming(true)
+                }
+            },
+            {
+                text: "Open External",
+                value: "open",
+                icon: "",
+                onClick: () => {
+                    ipcRenderer.send(Channels.OPEN_FILE, [...node.path.split("/"), node.name])
+                }
+            }
+        ]
+    })
+
+    useEffect(() => {
+        setRenaming(false)
+    }, [selected])
+
+    useEffect(() => {
+        if(isRenaming === false) {
+
+            if(name !== node.name) {
+                // send a rename event
+                const data: RenameRequest = {
+                    path: node.path.split("/"),
+                    from: node.name,
+                    to: name
+                }
+                ipcRenderer.send(Channels.RENAME_FILE, data)
+            }
+
+        }
+    }, [isRenaming])
+
+    if (!node.isDir) {
+        const names = node.name.split('.')
+        const ext = names[names.length - 1]
         const icon = getIconByExtension(ext)
 
-        return(
+        return (
             <>
-
-            <div 
-                className={[styles.node, styles.file].join(" ")}
-                draggable
-                onDragStart={e => {
-                    e.dataTransfer.setData("text/path", node.path + node.name)
-                    e.dataTransfer.setData(ext === "prefab" ? "type/prefab" : "type/asset", "")
-                }}
-            >
-                <Icon className={styles.icon}>{icon}</Icon>
-                <span>{node.name}</span>
-            </div>
+                {menu.element}
+                <div
+                    className={[styles.node, styles.file, selected ? styles.selected : ""].join(' ')}
+                    draggable
+                    onDragStart={(e) => {
+                        e.dataTransfer.setData('text/path', node.path + node.name)
+                        e.dataTransfer.setData(ext === 'prefab' ? 'type/prefab' : 'type/asset', '')
+                        e.dataTransfer.setData(`ext/${ext}`, "")
+                    }}
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        setSelected(id)
+                    }}
+                    onContextMenu={(e) => {
+                        e.stopPropagation()
+                        setSelected(id)
+                        menu.show(e.clientX, e.clientY)
+                    }}
+                >
+                    <Icon className={styles.icon}>{icon}</Icon>
+                    <span>{name}</span>
+                </div>
             </>
         )
     }
 
-
-    return(
+    return (
         <>
-        <div className={[styles.node, styles.folder].join(" ")} onClick={e => {
-            enterFolder(node.name)
-        }}>
-            <Icon className={styles.icon}>folder</Icon>
-            <span>{node.name}</span>
-        </div>
+            {menu.element}
+            <div
+                className={[styles.node, styles.folder, selected ? styles.selected : ""].join(' ')}
+                onClick={(e) => {
+                    e.stopPropagation()
+                    if (selected) {
+                        enterFolder(node.name)
+                    }
+
+                    setSelected(id)
+                }}
+                onContextMenu={(e) => {
+                    e.stopPropagation()
+                    setSelected(id)
+                    menu.show(e.clientX, e.clientY)
+                }}
+            >
+                <Icon className={styles.icon}>folder</Icon>
+                {isRenaming ? (
+                    <>
+                        <input 
+                        className={styles.renaming} 
+                        autoFocus 
+                        value={name} 
+                        onChange={e => setName(e.target.value)} 
+                        onKeyDown={e => {
+                            if(e.key === "Enter") {
+                                setRenaming(false)
+                            }
+                        }}
+                        />
+                    </>
+                ) : (
+                    <span>{name}</span>
+                )}
+            </div>
         </>
     )
 }

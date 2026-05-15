@@ -43,7 +43,8 @@ export default function ContextMenu({
                 display: shouldShow ? "flex" : "none"
             }}>
                 {options.map(op => (
-                    <div className={styles.option} key={op.value} onClick={_ => {
+                    <div className={styles.option} key={op.value} onClick={e => {
+                        e.stopPropagation()
                         if(op.onClick) op.onClick()
                         if(selectFn) selectFn(op);
                         setShow(false)

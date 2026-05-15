@@ -6,5 +6,9 @@ export const Channels = {
     INITIAL_LOAD: "initial_load",
     LOAD_GLTF: "load_gltf",
     ASSET_CHANGE: "asset_change",
-    ASSETS: "assets"
+    ASSETS: "assets",
+    CREATE_FOLDER: "create_folder",
+    RENAME_FILE: "rename_file",
+    CREATE_FILE: "create_file",
+    OPEN_FILE: "open_file"
 }
