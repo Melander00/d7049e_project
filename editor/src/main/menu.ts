@@ -1,6 +1,6 @@
 import type { MenuItem, MenuItemConstructorOptions } from "electron";
 import { Menu } from "electron";
-import { exportProject, openProject, saveProject } from "./editor";
+import { exportProject, openConfigWindow, openProject, saveProject } from "./editor";
 import { isProd } from "./env";
 
 const template: (MenuItemConstructorOptions | MenuItem)[] = [
@@ -26,6 +26,16 @@ const template: (MenuItemConstructorOptions | MenuItem)[] = [
             { role: "quit" }
         ]
     },
+    {
+        label: "Edit",
+        submenu: [
+            {
+                label: "Config",
+                accelerator: "Ctrl+P",
+                click: openConfigWindow
+            }
+        ]
+    }
 ]
 
 if(!isProd) {

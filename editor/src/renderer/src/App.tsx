@@ -9,6 +9,7 @@ import { useAppDispatch } from "./store/hooks";
 import { loadProjectAction } from "./store/store";
 import AssetManagerView from "./views/asset-manager/AssetManagerView";
 import ComponentsView from "./views/components/ComponentsView";
+import Config from "./views/config/Config";
 import EntityListView from "./views/entity-list/EntityListView";
 import InspectorView from "./views/inspector/InspectorView";
 import SceneView from "./views/scene/SceneView";
@@ -36,6 +37,7 @@ function App() {
 
     return (
         <>
+        <Config/>
         <div className="editor-grid">
             <div className="panel list"><EntityListView /></div>
             <div className="panel scene">

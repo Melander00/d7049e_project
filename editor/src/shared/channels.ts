@@ -11,5 +11,6 @@ export const Channels = {
     RENAME_FILE: "rename_file",
     CREATE_FILE: "create_file",
     OPEN_FILE: "open_file",
-    READ_FILE: "read_file"
+    READ_FILE: "read_file",
+    OPEN_CONFIG: "open_config"
 }

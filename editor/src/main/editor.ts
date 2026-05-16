@@ -75,3 +75,9 @@ export async function exportProject() {
     win?.webContents.send(Channels.EXPORT_REQUESTED)
 }
 
+
+
+export function openConfigWindow() {
+    const win = getMainWindow()
+    win?.webContents.send(Channels.OPEN_CONFIG)
+}
