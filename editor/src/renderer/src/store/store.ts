@@ -2,6 +2,7 @@ import type { Action, PayloadAction, ThunkAction } from '@reduxjs/toolkit'
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { createDebounce } from '@renderer/lib/debounce'
 import { saveProject } from '@renderer/lib/project/project'
+import { migrateEntityToSchema } from '@renderer/lib/schema/schema'
 import configReducer from './features/configSlice'
 import entitiesReducer from './features/entitiesSlice'
 
@@ -13,9 +14,13 @@ const appReducer = combineReducers({
 export type AppReducerReturn = ReturnType<typeof appReducer>
 
 // @ts-ignore
-const rootReducer: typeof appReducer = (state, action) => {
+const rootReducer: typeof appReducer = (state, action: PayloadAction<RootState>) => {
     if(action.type === "project/load") {
-        return action.payload
+        const newState = action.payload
+        for(const entity of newState.entities.entities) {
+            migrateEntityToSchema(entity)
+        }
+        return newState
     }
     return appReducer(state, action)
 } 
