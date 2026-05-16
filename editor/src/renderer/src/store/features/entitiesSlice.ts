@@ -44,6 +44,15 @@ export const entitiesSlice = createSlice({
             state.entities.push(entity)
             state.activeIndex = state.entities.length - 1
         },
+        createEntityFromTemplate: (state, action: PayloadAction<Entity>) => {
+            const entity: Entity = {
+                ...action.payload,
+                id: crypto.randomUUID()
+            }
+
+            state.entities.push(entity)
+            state.activeIndex = state.entities.length - 1
+        },
         removeEntity: (state, action: PayloadAction<number>) => {
             state.entities.splice(action.payload, 1)
             state.activeIndex = -1
@@ -99,6 +108,7 @@ export const entitiesSlice = createSlice({
 
 export const { 
     createEntity,
+    createEntityFromTemplate,
     removeEntity,
     duplicateEntity,
     setEntityName,

@@ -3,6 +3,7 @@ import Icon from '@renderer/components/icon/Icon'
 import { useIpc } from '@renderer/lib/ipc/hooks'
 import { ipcRenderer } from '@renderer/lib/ipc/ipcRenderer'
 import { getLuaTemplate } from '@renderer/lib/lua/lua'
+import { Entity } from '@renderer/store/features/entitiesSlice'
 import { Channels } from '@shared/channels'
 import { Asset, CreateFileRequest, RenameRequest } from '@shared/ipc'
 import { useEffect, useState } from 'react'
@@ -126,6 +127,8 @@ export default function AssetManagerView() {
         setSelectedPath("")
     }
 
+    const [showDrop, setShowDrop] = useState(false)
+
     const menu = ContextMenu({
         options: [
             {
@@ -192,6 +195,36 @@ export default function AssetManagerView() {
                         e.stopPropagation()
                         setSelectedPath("")
                     }}
+                    onDragOver={e => {
+                        if(!e.dataTransfer.types.includes("type/entity")) return
+                        e.stopPropagation()
+                        e.preventDefault()
+
+                        setShowDrop(true)
+                    }}
+                    onDrop={e => {
+                        if(!e.dataTransfer.types.includes("type/entity")) return
+                        e.stopPropagation()
+
+                        const raw = e.dataTransfer.getData("application/json")
+                        const entity: Entity = JSON.parse(raw)
+
+                        const data: CreateFileRequest = {
+                            path: currPath,
+                            filename: `${entity.name}.prefab`,
+                            content: JSON.stringify(entity, null, 2)
+                        }
+
+                        ipcRenderer.send(Channels.CREATE_FILE, data)
+
+                        setShowDrop(false)
+                    }}
+                    onDragLeave={e => {
+                        if(!e.dataTransfer.types.includes("type/entity")) return
+                        e.stopPropagation()
+
+                        setShowDrop(false)
+                    }}
                 >
                     {nodes.map((e) => (
                         <NodeElement
@@ -204,6 +237,28 @@ export default function AssetManagerView() {
                             selected={selectedFile === e.path + '/' + e.name}
                         />
                     ))}
+
+                    {showDrop ? (
+                        <>
+                        
+                        <NodeElement
+                        
+                            node={{
+                                isDir: false,
+                                name: "",
+                                path: ""
+                            }}
+                            id={"/drop"}
+                            key={"/drop"}
+                            currentFolder={currPath.join('/')}
+                            enterFolder={enterFolder}
+                            setSelected={setSelectedPath}
+                            selected={false}
+
+                        />
+
+                        </>
+                    ) : ""}
                 </div>
             </div>
         </>
@@ -291,7 +346,11 @@ function NodeElement({ node, enterFolder, id, selected, setSelected }: NodeEleme
                     onDragStart={(e) => {
                         e.dataTransfer.setData('text/path', node.path + node.name)
                         e.dataTransfer.setData("type/file", "")
-                        e.dataTransfer.setData(ext === 'prefab' ? 'type/prefab' : 'type/asset', '')
+                        if(ext === "prefab" || ext === "glb") {
+                            e.dataTransfer.setData("type/new-entity", "")
+                        }
+                        e.dataTransfer.setData("type/ext", ext)
+                        e.dataTransfer.setData('type/asset', '')
                         e.dataTransfer.setData(`ext/${ext}`, "")
                     }}
                     onClick={(e) => {

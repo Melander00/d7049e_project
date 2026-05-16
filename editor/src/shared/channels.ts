@@ -10,5 +10,6 @@ export const Channels = {
     CREATE_FOLDER: "create_folder",
     RENAME_FILE: "rename_file",
     CREATE_FILE: "create_file",
-    OPEN_FILE: "open_file"
+    OPEN_FILE: "open_file",
+    READ_FILE: "read_file"
 }

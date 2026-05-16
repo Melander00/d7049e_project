@@ -1,5 +1,5 @@
 import { Channels } from "@shared/channels";
-import type { CreateFileRequest, RenameRequest, SaveData } from "@shared/ipc";
+import type { CreateFileRequest, ReadFileRequest, RenameRequest, SaveData } from "@shared/ipc";
 import { ipcMain, shell } from "electron";
 import { existsSync } from "fs";
 import fs from "fs/promises";
@@ -100,5 +100,14 @@ export function initIpc() {
         if(!existsSync(fp)) return
 
         shell.openPath(fp)
+    })
+
+    ipcMain.handle(Channels.READ_FILE, async (_ev, req: ReadFileRequest) => {
+        const fp = path.join(getProjectDir(), ...req.path, req.filename)
+
+        if(!existsSync(fp)) return null;
+
+        const data = await fs.readFile(fp)
+        return data.toString()
     })
 }

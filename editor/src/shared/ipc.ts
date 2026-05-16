@@ -19,3 +19,8 @@ export interface CreateFileRequest {
     filename: string,
     content: string
 }
+
+export interface ReadFileRequest {
+    path: string[],
+    filename: string,
+}

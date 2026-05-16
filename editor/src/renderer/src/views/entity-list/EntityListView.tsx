@@ -1,8 +1,12 @@
 import { useState, type MouseEvent } from "react";
 
+import schema from "@renderer/assets/components.schema.json";
 import Icon from "@renderer/components/icon/Icon";
+import { ipcRenderer } from "@renderer/lib/ipc/ipcRenderer";
+import { Channels } from "@shared/channels";
+import { ReadFileRequest } from "@shared/ipc";
 import ContextMenu from "../../components/contextMenu/ContextMenu";
-import { createEntity, duplicateEntity, removeEntity, setActiveEntity, type Entity } from "../../store/features/entitiesSlice";
+import { createEntity, createEntityFromTemplate, duplicateEntity, removeEntity, setActiveEntity, type Entity } from "../../store/features/entitiesSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import styles from "./entitylist.module.css";
 
@@ -15,6 +19,8 @@ export default function EntityListView() {
     const entities = useAppSelector((state) => state.entities.entities);
     const activeIndex = useAppSelector((state) => state.entities.activeIndex);
     const dispatch = useAppDispatch();
+
+    const [showDrop, setShowDrop] = useState(false)
 
     const menu = ContextMenu({
         options: [
@@ -67,12 +73,93 @@ export default function EntityListView() {
     return (
         <>
             {menu.element}
-            <div className={styles.container} onContextMenu={onRightClick}>
+            <div 
+            className={styles.container} 
+            onContextMenu={onRightClick}
+            onDragOver={e => {
+                if(!e.dataTransfer.types.includes("type/new-entity")) return
+                e.stopPropagation()
+                e.preventDefault()
+
+                setShowDrop(true)
+            }}
+            onDrop={async e => {
+                if(!e.dataTransfer.types.includes("type/new-entity")) return
+                e.stopPropagation()
+
+                const path = e.dataTransfer.getData("text/path")
+                const ext = e.dataTransfer.getData("type/ext")
+
+                if(ext === "prefab") {   
+                    const req: ReadFileRequest = {
+                        path: path.split("/"),
+                        filename: ""
+                    }
+                    const data = await ipcRenderer.invoke(Channels.READ_FILE, req)
+                    const entity = JSON.parse(data)
+
+                    dispatch(createEntityFromTemplate(entity))
+                } else if(ext === "glb") {
+
+                    const splitted = path.split("/")
+                    const names = splitted[splitted.length-1].split(".")
+                    const name = names[0]
+
+                    const entity: Entity = {
+                        id: "",
+                        tag: "",
+                        name: name,
+                        components: [
+                            {
+                                class: schema.transform.class,
+                                position: {
+                                    x: 0,
+                                    y: 0,
+                                    z: 0,
+                                },
+                                rotation: {
+                                    x: 0,
+                                    y: 0,
+                                    z: 0,
+                                    w: 1,
+                                },
+                                scale: {
+                                    x: 1,
+                                    y: 1,
+                                    z: 1
+                                }
+                            },
+                            {
+                                class: schema.model.class,
+                                assetPath: path
+                            }
+                        ]
+                    }
+
+                    dispatch(createEntityFromTemplate(entity))
+
+                }
+
+
+                setShowDrop(false)
+            }}
+            onDragLeave={e => {
+                if(!e.dataTransfer.types.includes("type/new-entity")) return
+                e.stopPropagation()
+
+                setShowDrop(false)
+            }}
+            >
                 <div className={styles.groups}>
                     {...groups}
                     {/* {entities.map((e, i) => (
                         <EntityComponent key={e.id} index={i} entity={e} />
                     ))} */}
+                    {showDrop ? (
+                        <>
+                        <EntityComponent index={-2} entity={{id: "", name: "New Entity", components: [], tag: ""}} />
+                        </>
+                    ) : ""}
                 </div>
             </div>
         </>
@@ -146,6 +233,11 @@ function EntityComponent({ entity, index }: EntityProps) {
                 }}
                 onContextMenu={e => {
                     dispatch(setActiveEntity(index))
+                }}
+                draggable={isActive}
+                onDragStart={e => {
+                    e.dataTransfer.setData("type/entity", "")
+                    e.dataTransfer.setData("application/json", JSON.stringify(entity))
                 }}
                 >
                 {entity.name}

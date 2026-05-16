@@ -60,4 +60,5 @@
 
 .active {
     border-color: rgb(22, 123, 163);
+    cursor: grab;
 }
