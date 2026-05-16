@@ -148,6 +148,14 @@ export default function AssetManagerView() {
                     }
                     ipcRenderer.send(Channels.CREATE_FILE, data)
                 }
+            },
+            {
+                text: "Open Folder",
+                value: "open-external",
+                icon: "folder_open",
+                onClick: () => {
+                    ipcRenderer.send(Channels.OPEN_FILE, currPath)
+                }
             }
         ]
     })
@@ -239,9 +247,9 @@ function NodeElement({ node, enterFolder, id, selected, setSelected }: NodeEleme
                 }
             },
             {
-                text: "Open External",
+                text: node.isDir ? "Open Folder" : "Open File",
                 value: "open",
-                icon: "",
+                icon: node.isDir ? "folder_open" : "file_open",
                 onClick: () => {
                     ipcRenderer.send(Channels.OPEN_FILE, [...node.path.split("/"), node.name])
                 }
@@ -282,6 +290,7 @@ function NodeElement({ node, enterFolder, id, selected, setSelected }: NodeEleme
                     draggable
                     onDragStart={(e) => {
                         e.dataTransfer.setData('text/path', node.path + node.name)
+                        e.dataTransfer.setData("type/file", "")
                         e.dataTransfer.setData(ext === 'prefab' ? 'type/prefab' : 'type/asset', '')
                         e.dataTransfer.setData(`ext/${ext}`, "")
                     }}
@@ -296,7 +305,23 @@ function NodeElement({ node, enterFolder, id, selected, setSelected }: NodeEleme
                     }}
                 >
                     <Icon className={styles.icon}>{icon}</Icon>
-                    <span>{name}</span>
+                    {isRenaming ? (
+                        <>
+                            <input 
+                            className={styles.renaming} 
+                            autoFocus 
+                            value={name} 
+                            onChange={e => setName(e.target.value)} 
+                            onKeyDown={e => {
+                                if(e.key === "Enter") {
+                                    setRenaming(false)
+                                }
+                            }}
+                            />
+                        </>
+                    ) : (
+                        <span>{name}</span>
+                    )}
                 </div>
             </>
         )
