@@ -6,7 +6,7 @@ import net.mgsx.gltf.scene3d.scene.Scene;
 public class ModelComponent implements Component {
     public String assetPath;
     public transient Scene scene;
-    public boolean requested = false;
-    public boolean addedToScene = false;
+    public transient boolean requested = false;
+    public transient boolean addedToScene = false;
 }
 

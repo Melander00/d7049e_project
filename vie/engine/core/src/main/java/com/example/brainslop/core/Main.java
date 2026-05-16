@@ -97,8 +97,8 @@ public class Main extends ApplicationAdapter {
 //        printEntity(createCamera());
 //        printEntity(addPlayer());
 //        printEntity(addGround());
-        Entity player = addPlayer();
-        engine.addEntity(player);
+//        Entity player = addPlayer();
+//        engine.addEntity(player);
 
         btWorld = physicsSystem.getWorld();
         debugDrawer = new DebugDrawer();

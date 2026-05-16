@@ -38,9 +38,13 @@ const CLASS = {
         "com.example.brainslop.core.components.CameraComponent",
 
     text:
-        "com.example.brainslop.core.components.TextComponent"
+        "com.example.brainslop.core.components.TextComponent",
 
-    // TODO: Add CollisionComponent and PhysicsComponent and display the collision shape
+    collision:
+        "com.example.brainslop.core.components.CollisionComponent",
+
+    physics:
+        "com.example.brainslop.core.components.PhysicsComponent"
 }
 
 export default function SceneView() {
@@ -133,7 +137,8 @@ export default function SceneView() {
 
                 {entities.filter(e => e.components.find(
                     (c: any) => c.class === CLASS.transform
-                ) !== null).map((entity, index) => (
+                ) !== undefined).map((entity, index) => {
+                    return (
                     <EntityRenderer
                         key={entity.id}
                         entity={entity}
@@ -143,7 +148,8 @@ export default function SceneView() {
                         setDragging={setDragging}
                         mode={mode}
                     />
-                ))}
+                )
+                })}
 
             </Canvas>
 
@@ -187,6 +193,14 @@ function EntityRenderer({
 
     const text = entity.components.find(
         (c: any) => c.class === CLASS.text
+    )
+
+    const collision = entity.components.find(
+        (c: any) => c.class === CLASS.collision
+    )
+
+    const physics = entity.components.find(
+        (c: any) => c.class === CLASS.physics
     )
 
     const groupRef = useRef<THREE.Group>(null)
@@ -281,7 +295,7 @@ function EntityRenderer({
 
                 {/* Model */}
 
-                {model && (
+                {model && model.assetPath !== "" && (
                     <ModelRenderer
                         path={model.assetPath}
                     />
@@ -296,6 +310,30 @@ function EntityRenderer({
                         far={camera.far}
                     />
                 )}
+
+                {/* Collision Shapes */}
+                <group scale={[
+                    1/(transform.scale.x || 1),
+                    1/(transform.scale.y || 1),
+                    1/(transform.scale.z || 1)
+                ]}>
+
+                    {selected && collision && (
+                        <CollisionShapeRenderer
+                            shape={collision.shape}
+                            color={collision.isTrigger
+                                ? "#00ff88"
+                                : "#ffaa00"}
+                        />
+                    )}
+
+                    {selected && physics && (
+                        <CollisionShapeRenderer
+                            shape={physics.shape}
+                            color="#00aaff"
+                        />
+                    )}    
+                </group>
 
                 
 
@@ -320,6 +358,8 @@ function EntityRenderer({
                         {text.text}
                     </Text>
                 )}
+
+
 
             {/* Transform Controls */}
 
@@ -425,4 +465,141 @@ function CameraFrustum({
     return(
         <primitive object={helper} />
     )
+}
+
+type CollisionShapeRendererProps = {
+    shape: any
+    color?: string
+}
+
+function CollisionShapeRenderer({
+    shape,
+    color = "#00ff00"
+}: CollisionShapeRendererProps) {
+
+    if(!shape) return null
+
+    const material = (
+        <meshBasicMaterial
+            color={color}
+            wireframe
+            depthTest={false}
+            transparent
+            opacity={0.9}
+        />
+    )
+
+    switch(shape.type) {
+
+        case "BOX":
+
+            return (
+                <mesh 
+                renderOrder={999}
+                position={[
+                    shape.offsetPosition.x,
+                    shape.offsetPosition.y,
+                    shape.offsetPosition.z
+                ]}
+                >
+                    <boxGeometry
+                        args={[
+                            shape.a * 2 || 1,
+                            shape.b * 2 || 1,
+                            shape.c * 2 || 1
+                        ]}
+                    />
+                    {material}
+                </mesh>
+            )
+
+        case "SPHERE":
+
+            return (
+                <mesh 
+                renderOrder={999}
+                position={[
+                    shape.offsetPosition.x,
+                    shape.offsetPosition.y,
+                    shape.offsetPosition.z
+                ]}
+                >
+                    <sphereGeometry
+                        args={[
+                            shape.a || 1,
+                            16,
+                            16
+                        ]}
+                    />
+                    {material}
+                </mesh>
+            )
+
+        case "CYLINDER":
+
+            return (
+                <mesh
+                    renderOrder={999}
+
+                    /*
+                        Offset upward so bottom sits on ground.
+                        Remove this if your physics engine uses
+                        center-origin cylinders.
+                    */
+                    position={[
+                        shape.offsetPosition.x,
+                        shape.offsetPosition.y,
+                        shape.offsetPosition.z
+                    ]}
+                >
+                    <cylinderGeometry
+                        args={[
+                            shape.a || 1,
+                            shape.a || 1,
+                            shape.b*2 || 1,
+                            16
+                        ]}
+                    />
+                    {material}
+                </mesh>
+            )
+
+        case "CAPSULE":
+
+            return (
+                <mesh
+                    renderOrder={999}
+
+                    /*
+                        Capsules usually need vertical offset.
+                    */
+
+                    position={[
+                        shape.offsetPosition.x,
+                        shape.offsetPosition.y,
+                        shape.offsetPosition.z
+                    ]}
+
+                    // position={[
+                    //     0,
+                    //     ((shape.b || 1) * 0.5) +
+                    //     (shape.a || 0.5),
+                    //     0
+                    // ]}
+                >
+                    <capsuleGeometry
+                        args={[
+                            shape.a || 0.5,
+                            shape.b || 1,
+                            8,
+                            16
+                        ]}
+                    />
+                    {material}
+                </mesh>
+            )
+
+        default:
+            return null
+    }
 }

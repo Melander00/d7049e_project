@@ -107,6 +107,8 @@ function FieldRenderer({
     onChange
 }: FieldRendererProps) {
 
+    if(!values) return null
+
     return(
         <>
             {Object.entries(schemaFields).map(([key, field]) => {
