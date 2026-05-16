@@ -1,0 +1,85 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.back-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+
+    > span {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        vertical-align: middle;
+    }
+}
+
+
+
+.dirpath {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.nodes {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 25px;
+    width: 100%;
+    height: 100%;
+}
+
+.node {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    /* border: 1px solid var(--accent); */
+    flex-direction: column;
+    padding: 5px;
+    border-radius: 5px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    user-select: none;
+    justify-content: space-between;
+    border: 1px solid transparent;
+}
+
+.icon {
+    font-size: 4rem !important;
+}
+
+.folder {
+    cursor: pointer;
+}
+
+.file {
+    cursor: grab;
+}
+
+.selected {
+    border: 1px solid var(--accent);
+}
+
+.renaming {
+    width: 100%;
+}

@@ -2,8 +2,10 @@ import { useState } from "react";
 import styles from "./inspector.module.css";
 
 import schema from "@renderer/assets/components.schema.json";
-import { addComponent } from "../../store/features/entitiesSlice";
+import { schemaCompToFields as schemaCompToObject } from "@renderer/lib/schema/schema";
+import { addComponent, setEntityName, setEntityTag } from "../../store/features/entitiesSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import EntityComponentElement from "./EntityComponentElement";
 
 export default function InspectorView() {
 
@@ -21,12 +23,18 @@ export default function InspectorView() {
     const [showDrop, setShowDrop] = useState(false)
     
     const onComponentDrop = (type: keyof typeof schema) => {
+        if(!entity) return;
+
         const component = schema[type]
 
-        // TODO: create component and dispatch
+        // We enforce a single instance per component type
+        if(entity.components.find(e => e.class === component.class)) return
+
+        const comp = schemaCompToObject(component)
+
         dispatch(addComponent({
             index: entityIndex,
-            component: component
+            component: comp
         }))
         
     }
@@ -34,7 +42,22 @@ export default function InspectorView() {
     if(entity === null) return ""
     return(
         <div className={styles.container}>
-            <h1>inspector</h1>
+            <div className={styles['entity-header']}>
+                <label className={styles['entity-header-label']}>
+                    <span>Name</span>
+
+                    <input value={entity.name} onChange={e => {
+                        dispatch(setEntityName({name: e.currentTarget.value, index: entityIndex}))
+                    }} />
+                </label>
+                <label className={styles['entity-header-label']}>
+                    <span>Tag</span>
+                    <input value={entity.tag} onChange={e => {
+                        dispatch(setEntityTag({index: entityIndex, tag: e.currentTarget.value}))
+                    }} />
+                </label>
+
+            </div>
             <div 
                 className={styles['component-list']}
                 onDragOver={e => {
@@ -48,14 +71,14 @@ export default function InspectorView() {
                 }}
                 onDrop={e => {
                     setShowDrop(false)
+                    if(!e.dataTransfer.types.includes("type/component")) return
                     const raw = e.dataTransfer.getData("application/json")
                     const json = JSON.parse(raw)
                     onComponentDrop(json.data)
                 }}
             >
 
-                <pre>{JSON.stringify(entity, null, 2)}</pre>
-
+                {entity.components.map((c,i) => <EntityComponentElement index={i} key={`${entity.id}-${c.class}`} component={c} />)}
 
                 {showDrop ? (<>
                     <div className={styles['drop-component']}>

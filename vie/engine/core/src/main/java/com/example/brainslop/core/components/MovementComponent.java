@@ -6,5 +6,5 @@ import com.badlogic.gdx.math.Vector3;
 public class MovementComponent implements Component {
     public float movementSpeed = 5f;
 
-    public Vector3 moveDir = new Vector3();
+    public transient Vector3 moveDir = new Vector3();
 }

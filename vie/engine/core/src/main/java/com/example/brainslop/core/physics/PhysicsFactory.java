@@ -1,6 +1,7 @@
 package com.example.brainslop.core.physics;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
@@ -25,10 +26,13 @@ public class PhysicsFactory {
             float c
     ) {
 
+        System.out.println(type);
+
         return switch(type) {
             case CYLINDER -> new btCylinderShape(new Vector3(a,b,c));
             case CAPSULE -> new btCapsuleShape(a, b);
             case SPHERE -> new btSphereShape(a);
+//            case BOX -> new btBoxShape(new Vector3(a,b,c));
             default -> new btBoxShape(new Vector3(a,b,c));
         };
     }
@@ -41,7 +45,7 @@ public class PhysicsFactory {
             String cacheName
     ) {
 
-        if(cacheName == null) {
+        if(cacheName == null || cacheName.isEmpty()) {
             return createShape(type, a, b, c);
         }
 
@@ -65,6 +69,9 @@ public class PhysicsFactory {
 
         btCollisionShape shape = createShape(shapeC.type, shapeC.a, shapeC.b, shapeC.c, shapeC.shapeName);
 
+        btCompoundShape compoundShape = new btCompoundShape();
+        compoundShape.addChildShape(new Matrix4().setTranslation(shapeC.offsetPosition), shape);
+
         Vector3 inertia = new Vector3();
         if (mass > 0f) shape.calculateLocalInertia(mass, inertia);
 
@@ -74,7 +81,7 @@ public class PhysicsFactory {
                 new btRigidBody.btRigidBodyConstructionInfo(
                         mass,
                         motionState,
-                        shape,
+                        compoundShape,
                         inertia
                 );
 

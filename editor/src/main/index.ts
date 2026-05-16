@@ -2,12 +2,16 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
+import { loadConfig } from './config'
+import { updateTitle } from './editor'
 import { initIpc } from './ipc'
 import { menu } from './menu'
 
-function createWindow(): void {
+let mainWindow: BrowserWindow
+
+export function createWindow(): BrowserWindow {
     // Create the browser window.
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 1920,
         height: 1080,
         show: false,
@@ -21,7 +25,7 @@ function createWindow(): void {
     mainWindow.setMenu(menu)
 
     mainWindow.on('ready-to-show', () => {
-        mainWindow.show()
+        mainWindow?.show()
     })
 
     mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -36,12 +40,16 @@ function createWindow(): void {
     } else {
         mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
     }
+
+    return mainWindow;
 }
+
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
     // Set app user model id for windows
     electronApp.setAppUserModelId('com.electron')
 
@@ -55,7 +63,11 @@ app.whenReady().then(() => {
     // IPC
     initIpc()
 
+    await loadConfig()
+
     createWindow()
+
+    updateTitle(mainWindow)
 
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
@@ -63,6 +75,12 @@ app.whenReady().then(() => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
 })
+
+
+
+export function getMainWindow() {
+    return mainWindow
+}
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

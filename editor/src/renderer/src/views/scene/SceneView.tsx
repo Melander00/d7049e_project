@@ -1,5 +1,605 @@
+import {
+    GizmoHelper,
+    GizmoViewport,
+    Grid,
+    OrbitControls,
+    Text,
+    TransformControls
+} from "@react-three/drei"
+import { Canvas } from "@react-three/fiber"
+
+import * as THREE from "three"
+
+import { useEffect, useMemo, useRef, useState } from "react"
+
+import {
+    useAppDispatch,
+    useAppSelector
+} from "@renderer/store/hooks"
+
+import {
+    setActiveEntity,
+    updateComponent
+} from "@renderer/store/features/entitiesSlice"
+
+import { createDebounce } from "@renderer/lib/debounce"
+import { useDispatch } from "react-redux"
+import styles from "./scene.module.css"
+import { useGLTFDisk } from "./useGLTFDisk"
+
+const CLASS = {
+    transform:
+        "com.example.brainslop.core.components.TransformComponent",
+
+    model:
+        "com.example.brainslop.core.components.ModelComponent",
+
+    camera:
+        "com.example.brainslop.core.components.CameraComponent",
+
+    text:
+        "com.example.brainslop.core.components.TextComponent",
+
+    collision:
+        "com.example.brainslop.core.components.CollisionComponent",
+
+    physics:
+        "com.example.brainslop.core.components.PhysicsComponent"
+}
+
 export default function SceneView() {
-    return(
-        <h1>scene</h1>
+
+    const entities = useAppSelector(
+        state => state.entities.entities
     )
+
+    const activeIndex = useAppSelector(
+        state => state.entities.activeIndex
+    )
+
+    const dispatch = useDispatch()
+
+    const [isDragging, setDragging] = useState(false)
+
+    const [mode, setMode] = useState<"translate" | "rotate" | "scale">("translate")
+
+
+    useEffect(() => {
+
+        const listener = (e: KeyboardEvent) => {
+            switch(e.key.toLowerCase()) {
+                case "w":
+                    setMode("translate")
+                    break;
+                case "s":
+                    setMode("scale")
+                    break;
+                case "r":
+                    setMode("rotate")
+                    break;
+            }
+        }
+
+        window.addEventListener("keydown", listener)
+
+        return () => {
+            window.removeEventListener("keydown", listener)
+        }
+    }, [])
+
+    return(
+        <div 
+            className={styles.container}
+        >
+
+            <Canvas
+                shadows
+                camera={{
+                    position: [8, 8, 8],
+                    fov: 60
+                }}
+                onPointerMissed={_e => {
+                    dispatch(setActiveEntity(-1))
+                }}
+            >
+
+                <color
+                    attach="background"
+                    args={["#1a1a1a"]}
+                />
+
+                <ambientLight intensity={0.7} />
+
+                <directionalLight
+                    position={[10, 10, 5]}
+                    intensity={1.5}
+                    castShadow
+                />
+
+                <Grid
+                    args={[200, 200]}
+                    cellSize={1}
+                    sectionSize={10}
+                    fadeDistance={150}
+                    fadeStrength={1}
+                />
+
+                <OrbitControls
+                    makeDefault
+                    enableDamping
+                    dampingFactor={0.1}
+                    enabled={!isDragging}
+                />
+
+                <GizmoHelper alignment="bottom-right">
+                    <GizmoViewport />
+                </GizmoHelper>
+
+                {entities.filter(e => e.components.find(
+                    (c: any) => c.class === CLASS.transform
+                ) !== undefined).map((entity, index) => {
+                    return (
+                    <EntityRenderer
+                        key={entity.id}
+                        entity={entity}
+                        index={index}
+                        selected={index === activeIndex}
+                        isDragging={isDragging}
+                        setDragging={setDragging}
+                        mode={mode}
+                    />
+                )
+                })}
+
+            </Canvas>
+
+        </div>
+    )
+}
+
+type EntityRendererProps = {
+    entity: any
+    index: number
+    selected: boolean,
+    isDragging: boolean,
+    setDragging: (val: boolean) => void,
+    mode: "translate" | "rotate" | "scale"
+}
+
+function EntityRenderer({
+    entity,
+    index,
+    selected,
+    isDragging,
+    setDragging,
+    mode
+}: EntityRendererProps) {
+
+    const dispatch = useAppDispatch()
+
+    const transform = entity.components.find(
+        (c: any) => c.class === CLASS.transform
+    )
+
+    // if(!transform) return null
+
+    const model = entity.components.find(
+        (c: any) => c.class === CLASS.model
+    )
+
+    const camera = entity.components.find(
+        (c: any) => c.class === CLASS.camera
+    )
+
+    const text = entity.components.find(
+        (c: any) => c.class === CLASS.text
+    )
+
+    const collision = entity.components.find(
+        (c: any) => c.class === CLASS.collision
+    )
+
+    const physics = entity.components.find(
+        (c: any) => c.class === CLASS.physics
+    )
+
+    const groupRef = useRef<THREE.Group>(null)
+
+    const quaternion = useMemo(() => {
+
+        return new THREE.Quaternion(
+            transform.rotation.x,
+            transform.rotation.y,
+            transform.rotation.z,
+            transform.rotation.w || 1
+        )
+
+    }, [transform.rotation])
+
+    const debounce = useRef(createDebounce(() => {
+        const obj = groupRef.current
+        if(!obj) return
+
+        dispatch(updateComponent({
+            index,
+            componentIndex:
+                entity.components.findIndex(
+                    (c: any) =>
+                        c.class === CLASS.transform
+                ),
+
+            path: ["position"],
+            value: {
+                x: obj.position.x,
+                y: obj.position.y,
+                z: obj.position.z
+            }
+        }))
+
+        dispatch(updateComponent({
+            index,
+            componentIndex:
+                entity.components.findIndex(
+                    (c: any) =>
+                        c.class === CLASS.transform
+                ),
+
+            path: ["rotation"],
+            value: {
+                x: obj.quaternion.x,
+                y: obj.quaternion.y,
+                z: obj.quaternion.z,
+                w: obj.quaternion.w
+            }
+        }))
+
+        dispatch(updateComponent({
+            index,
+            componentIndex:
+                entity.components.findIndex(
+                    (c: any) =>
+                        c.class === CLASS.transform
+                ),
+
+            path: ["scale"],
+            value: {
+                x: obj.scale.x,
+                y: obj.scale.y,
+                z: obj.scale.z
+            }
+        }))
+    }, 60/1000))
+
+    return(
+        <>
+
+            <group
+                ref={groupRef}
+                position={[
+                    transform.position.x,
+                    transform.position.y,
+                    transform.position.z
+                ]}
+                quaternion={quaternion}
+                scale={[
+                    transform.scale.x || 1,
+                    transform.scale.y || 1,
+                    transform.scale.z || 1
+                ]}
+                onClick={(e) => {
+                    e.stopPropagation()
+                    if(isDragging) return
+                    dispatch(setActiveEntity(index))
+                }}
+            >
+
+                {/* Model */}
+
+                {model && model.assetPath !== "" && (
+                    <ModelRenderer
+                        path={model.assetPath}
+                    />
+                )}
+
+                {/* Camera Frustum */}
+
+                {camera && (
+                    <CameraFrustum
+                        fov={camera.fov}
+                        near={camera.near}
+                        far={camera.far}
+                    />
+                )}
+
+                {/* Collision Shapes */}
+                <group scale={[
+                    1/(transform.scale.x || 1),
+                    1/(transform.scale.y || 1),
+                    1/(transform.scale.z || 1)
+                ]}>
+
+                    {selected && collision && (
+                        <CollisionShapeRenderer
+                            shape={collision.shape}
+                            color={collision.isTrigger
+                                ? "#00ff88"
+                                : "#ffaa00"}
+                        />
+                    )}
+
+                    {selected && physics && (
+                        <CollisionShapeRenderer
+                            shape={physics.shape}
+                            color="#00aaff"
+                        />
+                    )}    
+                </group>
+
+                
+
+            </group>
+
+            {/* Text */}
+
+                {text && (
+                    <Text
+                        position={[
+                            transform.position.x + text.offsetPosition.x,
+                            transform.position.y + text.offsetPosition.y,
+                            transform.position.z + text.offsetPosition.z
+                        ]}
+                        fontSize={text.scale * 1}
+                        anchorX={
+                            text.centered
+                                ? "center"
+                                : "left"
+                        }
+                    >
+                        {text.text}
+                    </Text>
+                )}
+
+
+
+            {/* Transform Controls */}
+
+            {selected && groupRef.current && (
+                <TransformControls
+                    object={groupRef.current}
+                    mode={mode}
+
+                    onClick={e => {
+                        e.stopPropagation()
+                    }}
+
+                    onMouseUp={_e => {
+                        setDragging(false)
+                    }}
+
+                    onMouseDown={_e => {
+                        setDragging(true)
+                    }}
+
+                    onObjectChange={() => {
+
+                        const obj = groupRef.current
+                        if(!obj) return
+
+                        debounce.current()
+                        return
+                    }}
+                />
+            )}
+
+        </>
+    )
+}
+
+type ModelRendererProps = {
+    path: string
+}
+
+function ModelRenderer({
+    path
+}: ModelRendererProps) {
+
+    const {
+        gltf,
+        loading,
+        error
+    } = useGLTFDisk(path)
+
+    if(loading) {
+        return null
+    }
+
+    if(error || !gltf) {
+
+        return(
+            <mesh>
+                <boxGeometry />
+                <meshStandardMaterial
+                    color="red"
+                />
+            </mesh>
+        )
+    }
+
+    return(
+        <primitive object={gltf.scene} />
+    )
+}
+
+type CameraFrustumProps = {
+    fov: number
+    near: number
+    far: number
+}
+
+function CameraFrustum({
+    fov,
+    near,
+    far
+}: CameraFrustumProps) {
+
+    const camera = useMemo(() => {
+
+        const cam =
+            new THREE.PerspectiveCamera(
+                fov,
+                1,
+                near,
+                far
+            )
+
+        cam.updateProjectionMatrix()
+
+        return cam
+
+    }, [fov, near, far])
+
+    const helper = useMemo(() => {
+        return new THREE.CameraHelper(camera)
+    }, [camera])
+
+    return(
+        <primitive object={helper} />
+    )
+}
+
+type CollisionShapeRendererProps = {
+    shape: any
+    color?: string
+}
+
+function CollisionShapeRenderer({
+    shape,
+    color = "#00ff00"
+}: CollisionShapeRendererProps) {
+
+    if(!shape) return null
+
+    const material = (
+        <meshBasicMaterial
+            color={color}
+            wireframe
+            depthTest={false}
+            transparent
+            opacity={0.9}
+        />
+    )
+
+    switch(shape.type) {
+
+        case "BOX":
+
+            return (
+                <mesh 
+                renderOrder={999}
+                position={[
+                    shape.offsetPosition.x,
+                    shape.offsetPosition.y,
+                    shape.offsetPosition.z
+                ]}
+                >
+                    <boxGeometry
+                        args={[
+                            shape.a * 2 || 1,
+                            shape.b * 2 || 1,
+                            shape.c * 2 || 1
+                        ]}
+                    />
+                    {material}
+                </mesh>
+            )
+
+        case "SPHERE":
+
+            return (
+                <mesh 
+                renderOrder={999}
+                position={[
+                    shape.offsetPosition.x,
+                    shape.offsetPosition.y,
+                    shape.offsetPosition.z
+                ]}
+                >
+                    <sphereGeometry
+                        args={[
+                            shape.a || 1,
+                            16,
+                            16
+                        ]}
+                    />
+                    {material}
+                </mesh>
+            )
+
+        case "CYLINDER":
+
+            return (
+                <mesh
+                    renderOrder={999}
+
+                    /*
+                        Offset upward so bottom sits on ground.
+                        Remove this if your physics engine uses
+                        center-origin cylinders.
+                    */
+                    position={[
+                        shape.offsetPosition.x,
+                        shape.offsetPosition.y,
+                        shape.offsetPosition.z
+                    ]}
+                >
+                    <cylinderGeometry
+                        args={[
+                            shape.a || 1,
+                            shape.a || 1,
+                            shape.b*2 || 1,
+                            16
+                        ]}
+                    />
+                    {material}
+                </mesh>
+            )
+
+        case "CAPSULE":
+
+            return (
+                <mesh
+                    renderOrder={999}
+
+                    /*
+                        Capsules usually need vertical offset.
+                    */
+
+                    position={[
+                        shape.offsetPosition.x,
+                        shape.offsetPosition.y,
+                        shape.offsetPosition.z
+                    ]}
+
+                    // position={[
+                    //     0,
+                    //     ((shape.b || 1) * 0.5) +
+                    //     (shape.a || 0.5),
+                    //     0
+                    // ]}
+                >
+                    <capsuleGeometry
+                        args={[
+                            shape.a || 0.5,
+                            shape.b || 1,
+                            8,
+                            16
+                        ]}
+                    />
+                    {material}
+                </mesh>
+            )
+
+        default:
+            return null
+    }
 }

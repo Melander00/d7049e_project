@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: editor
+productName: Mobile Slop Editor
 directories:
   buildResources: build
 files:

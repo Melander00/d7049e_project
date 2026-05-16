@@ -19,7 +19,16 @@
                     "a": "float",
                     "b": "float",
                     "c": "float",
-                    "shapeName": "string"
+                    "shapeName": "string",
+                    "offsetPosition": {
+                        "type": "Vector3",
+                        "class": "com.badlogic.gdx.math.Vector3",
+                        "fields": {
+                            "x": "float",
+                            "y": "float",
+                            "z": "float"
+                        }
+                    }
                 }
             },
             "isTrigger": "boolean"
@@ -89,8 +98,7 @@
         "type": "AutoShooterComponent",
         "class": "com.example.brainslop.core.components.AutoShooterComponent",
         "fields": {
-            "shotsPerSecond": "float",
-            "timeSinceLastShot": "float"
+            "shotsPerSecond": "float"
         }
     },
     "physics": {
@@ -114,7 +122,16 @@
                     "a": "float",
                     "b": "float",
                     "c": "float",
-                    "shapeName": "string"
+                    "shapeName": "string",
+                    "offsetPosition": {
+                        "type": "Vector3",
+                        "class": "com.badlogic.gdx.math.Vector3",
+                        "fields": {
+                            "x": "float",
+                            "y": "float",
+                            "z": "float"
+                        }
+                    }
                 }
             },
             "hasGravity": "boolean"
@@ -124,17 +141,13 @@
         "type": "InputComponent",
         "class": "com.example.brainslop.core.components.InputComponent",
         "fields": {
-            "axisX": "float",
-            "axisY": "float",
-            "action1": "boolean",
-            "action2": "boolean"
+            
         }
     },
     "lifetime": {
         "type": "LifetimeComponent",
         "class": "com.example.brainslop.core.components.LifetimeComponent",
         "fields": {
-            "timeLived": "float",
             "maxTimeAlive": "float"
         }
     },
@@ -196,25 +209,23 @@
         "type": "ModelComponent",
         "class": "com.example.brainslop.core.components.ModelComponent",
         "fields": {
-            "assetPath": "string",
-            "requested": "boolean",
-            "addedToScene": "boolean"
+            "assetPath": "string"
+        }
+    },
+    "animation": {
+        "type": "AnimationComponent",
+        "class": "com.example.brainslop.core.components.AnimationComponent",
+        "fields": {
+            "currentAnimationId": "string",
+            "playbackSpeed": "float",
+            "loop": "boolean"
         }
     },
     "movement": {
         "type": "MovementComponent",
         "class": "com.example.brainslop.core.components.MovementComponent",
         "fields": {
-            "movementSpeed": "float",
-            "moveDir": {
-                "type": "Vector3",
-                "class": "com.badlogic.gdx.math.Vector3",
-                "fields": {
-                    "x": "float",
-                    "y": "float",
-                    "z": "float"
-                }
-            }
+            "movementSpeed": "float"
         }
     },
     "script": {
@@ -229,8 +240,7 @@
         "class": "com.example.brainslop.core.components.AgentComponent",
         "fields": {
             "faction": "string",
-            "behaviorType": "string",
-            "currentState": "string"
+            "behaviorType": "string"
         }
     }
 }
