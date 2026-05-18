@@ -12,22 +12,32 @@ import ComponentsView from "./views/components/ComponentsView";
 import Config from "./views/config/Config";
 import EntityListView from "./views/entity-list/EntityListView";
 import InspectorView from "./views/inspector/InspectorView";
+import NotificationsView from "./views/notifications/NotificationsView";
+import { useNotifications } from "./views/notifications/useNotifications";
 import SceneView from "./views/scene/SceneView";
 
 function App() {
 
     const dispatch = useAppDispatch()
 
+    const {
+        addNotification,
+    } = useNotifications()
+ 
     useIpc(Channels.SAVE_REQUESTED, () => {
         saveProject()
+        addNotification("Saved", "Successfully saved the project", "success")
     })
-
+    
     useIpc(Channels.LOAD_STATE, (_event, state) => {
         dispatch(loadProjectAction(state))
+        addNotification("Loaded", "Successfully loaded the project", "success")
     })
-
+    
     useIpc(Channels.EXPORT_REQUESTED, () => {
         exportProject()
+        addNotification("Exported", "Successfully exported the project", "success")
+
     })
 
     useEffect(() => {
@@ -38,6 +48,7 @@ function App() {
     return (
         <>
         <Config/>
+        <NotificationsView/>
         <div className="editor-grid">
             <div className="panel list"><EntityListView /></div>
             <div className="panel scene">
