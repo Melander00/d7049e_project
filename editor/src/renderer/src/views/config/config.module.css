@@ -1,0 +1,33 @@
+.dialog {
+    z-index: 1001;
+    background-color: var(--cm-bg);
+    border: 3px solid var(--cm-border);
+    border-radius: 15px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.container::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.container:focus-visible {
+    outline: none;
+}
+
+.label {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/*
+--cm-border
+--cm-bg
+--cm-bg-hover
+*/
