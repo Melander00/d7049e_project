@@ -90,7 +90,7 @@ public class ECS extends Engine {
             return;
         }
 
-        entity.removeAll();
+//        entity.removeAll();
         this.removeEntity(entity);
     }
 

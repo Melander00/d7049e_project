@@ -65,7 +65,7 @@ export async function getAssets(assetDir: string): Promise<Asset[]> {
 
         return {
             isDir: f.isDirectory(),
-            path: assetPath
+            path: assetPath.split(path.sep).join("/")
         }
     }).filter(f => f !== null)
 }
