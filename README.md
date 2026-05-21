@@ -1,3 +1,5 @@
+[Instructions on setting up environment](./CONTRIBUTION.md)
+
 # brain-slop game engine
 
 A Java-based virtual interactive environment (VIE) engine for building fast-paced, replayable **3D mobile games**, with a focus on ECS architecture, physics simulation, and performance.

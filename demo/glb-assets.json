@@ -1,0 +1,8 @@
+{
+  "paths": [
+    "model/soldier.glb",
+    "model/ground.glb",
+    "model/Zombie.glb",
+    "model/Barrel.glb"
+  ]
+}

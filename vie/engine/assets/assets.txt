@@ -1,3 +1,13 @@
+bin/main/assets.txt
+bin/main/config.json
+bin/main/entities.jsonl
+bin/main/glb-assets.json
+bin/main/lua/test.lua
+bin/main/model/Dying.glb
+bin/main/model/bullet.glb
+bin/main/model/ground.glb
+bin/main/model/sahur.glb
+bin/main/model/soldier.glb
 build.gradle
 config.json
 entities.jsonl

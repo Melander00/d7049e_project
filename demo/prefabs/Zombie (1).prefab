@@ -1,0 +1,67 @@
+{
+  "id": "613019d5-f7f7-4c62-93d4-46a3505a453c",
+  "tag": "Z",
+  "name": "Zombie",
+  "components": [
+    {
+      "class": "com.example.brainslop.core.components.TransformComponent",
+      "position": {
+        "x": -0.37504304592796833,
+        "y": 0.501829458759653,
+        "z": -37.88650029418732
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
+      },
+      "scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      }
+    },
+    {
+      "class": "com.example.brainslop.core.components.ModelComponent",
+      "assetPath": "model/Zombie.glb"
+    },
+    {
+      "class": "com.example.brainslop.core.components.AnimationComponent",
+      "currentAnimationId": "CharacterArmature|Crawl",
+      "playbackSpeed": 1,
+      "loop": true
+    },
+    {
+      "class": "com.example.brainslop.core.components.MovementComponent",
+      "movementSpeed": 2,
+      "moveDir": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      }
+    },
+    {
+      "class": "com.example.brainslop.core.components.PhysicsComponent",
+      "mass": 1,
+      "shape": {
+        "type": "BOX",
+        "a": 1,
+        "b": 1,
+        "c": 1,
+        "shapeName": "",
+        "offsetPosition": {
+          "x": 0,
+          "y": 1,
+          "z": 0
+        }
+      },
+      "hasGravity": true
+    },
+    {
+      "class": "com.example.brainslop.core.components.HealthComponent",
+      "currentHP": 10,
+      "maxHP": 10
+    }
+  ]
+}
