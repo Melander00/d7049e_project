@@ -19,6 +19,6 @@ public class InputMovementSystem extends IteratingSystem {
         InputComponent i = Mappers.input.get(entity);
         MovementComponent m = Mappers.movement.get(entity);
 
-        m.moveDir.set(i.axisX, m.moveDir.y, i.axisY);
+        m.moveDir.set(-i.axisX, m.moveDir.y, i.axisY);
     }
 }

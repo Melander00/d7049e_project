@@ -32,7 +32,7 @@ export async function exportProject() {
             const c: string = comp.class
 
             if(c.endsWith("ModelComponent")) {
-                if(comp.assetPath) {
+                if(comp.assetPath && !assets.includes(comp.assetPath)) {
                     assets.push(comp.assetPath)
                 }
             }

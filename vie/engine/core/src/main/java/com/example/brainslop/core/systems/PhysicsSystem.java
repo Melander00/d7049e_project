@@ -89,7 +89,9 @@ public class PhysicsSystem extends EntitySystem implements FixedUpdateSystem {
 
         c.collisionObject = new btCollisionObject();
         btCollisionShape collShape = PhysicsFactory.createShape(c.shape.type, c.shape.a, c.shape.b, c.shape.c, c.shape.shapeName);
-        c.collisionObject.setCollisionShape(collShape);
+        btCompoundShape compoundShape = new btCompoundShape();
+        compoundShape.addChildShape(new Matrix4().setTranslation(c.shape.offsetPosition), collShape);
+        c.collisionObject.setCollisionShape(compoundShape);
         c.collisionObject.setWorldTransform(tempMatrix);
         c.collisionObject.userData = entity;
 

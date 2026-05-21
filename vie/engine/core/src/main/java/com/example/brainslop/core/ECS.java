@@ -31,15 +31,7 @@ public class ECS extends Engine {
         this.pendingDestroy = new ObjectSet<>();
         this.stepSize = 1f / fixedUpdateFrequency;
 
-        /*
-         * ECS owns entity lifecycle.
-         * DestroyRequested messages are queued first and flushed after update work,
-         * so entities are not removed while systems are still iterating.
-         */
-        this.messageManager.subscribe(MessageType.DESTROY_REQUESTED, message -> {
-            DestroyRequested destroyRequested = (DestroyRequested) message;
-            pendingDestroy.add(destroyRequested.entity);
-        });
+
     }
 
     /**
@@ -53,6 +45,16 @@ public class ECS extends Engine {
                 fixedUpdateSystems.add(fixed);
             }
         }
+
+        /*
+         * ECS owns entity lifecycle.
+         * DestroyRequested messages are queued first and flushed after update work,
+         * so entities are not removed while systems are still iterating.
+         */
+        this.messageManager.subscribe(MessageType.DESTROY_REQUESTED, message -> {
+            DestroyRequested destroyRequested = (DestroyRequested) message;
+            pendingDestroy.add(destroyRequested.entity);
+        });
     }
 
     @Override

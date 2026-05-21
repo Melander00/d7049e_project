@@ -32,8 +32,12 @@ public class MessageManager {
     }
 
     public void sendMessage(Message message) {
+
+//        System.out.println(message);
+
         for (MessageListener listener : listeners.get(message.getType())) {
             listener.onMessage(message);
+
         }
     }
 

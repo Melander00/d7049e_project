@@ -44,12 +44,13 @@ public class AutoShooterSystem extends IteratingSystem {
         Entity bullet = getEngine().createEntity();
         TransformComponent bulletTransform = new TransformComponent();
         bulletTransform.position.set(t.position);
+        bulletTransform.position.add(0, 2, -0.5f);
         bulletTransform.rotation.set(t.rotation);
         bullet.add(bulletTransform);
 
         PhysicsComponent pc = PhysicsFactory.createComponent(bullet, 0.1f, bulletShape, false);
         pc.rigidBody.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
-        tempVector.set(10,0,0);
+        tempVector.set(0,0,20);
         bulletTransform.rotation.transform(tempVector);
         pc.rigidBody.setLinearVelocity(tempVector);
         bullet.add(pc);
@@ -59,8 +60,12 @@ public class AutoShooterSystem extends IteratingSystem {
         bullet.add(bulletModel);
 
         LifetimeComponent lifetimeComponent = new LifetimeComponent();
-        lifetimeComponent.maxTimeAlive = 1f;
+        lifetimeComponent.maxTimeAlive = 10f;
         bullet.add(lifetimeComponent);
+
+        DamageComponent dmg = new DamageComponent();
+        dmg.damage = 2;
+        bullet.add(dmg);
 
     }
 }

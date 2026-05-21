@@ -78,6 +78,9 @@ public class Main extends ApplicationAdapter {
                 new AutoShooterSystem(),
                 physicsSystem,
                 new LifetimeSystem(),
+                new BulletCollisionSystem(messageManager),
+                new HealthSystem(),
+                new BarrelSystem(messageManager),
 
                 new CameraSystem(sceneManager),
                 new ModelTransformSystem(), // Prepare models for rendering

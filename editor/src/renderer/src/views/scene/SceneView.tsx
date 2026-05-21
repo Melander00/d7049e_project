@@ -211,7 +211,7 @@ function EntityRenderer({
             transform.rotation.x,
             transform.rotation.y,
             transform.rotation.z,
-            transform.rotation.w || 1
+            transform.rotation.w
         )
 
     }, [transform.rotation])
@@ -363,9 +363,9 @@ function EntityRenderer({
 
             {/* Transform Controls */}
 
-            {selected && groupRef.current && (
+            {selected && transform && (
                 <TransformControls
-                    object={groupRef.current}
+                    object={groupRef.current!}
                     mode={mode}
 
                     onClick={e => {

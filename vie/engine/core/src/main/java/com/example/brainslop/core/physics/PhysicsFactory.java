@@ -26,8 +26,6 @@ public class PhysicsFactory {
             float c
     ) {
 
-        System.out.println(type);
-
         return switch(type) {
             case CYLINDER -> new btCylinderShape(new Vector3(a,b,c));
             case CAPSULE -> new btCapsuleShape(a, b);

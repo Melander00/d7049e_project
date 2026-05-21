@@ -85,6 +85,13 @@
             "effectId": "string"
         }
     },
+    "damage": {
+        "type": "DamageComponent",
+        "class": "com.example.brainslop.core.components.DamageComponent",
+        "fields": {
+            "damage": "float"
+        }
+    },
     "freezerotation": {
         "type": "FreezeRotationComponent",
         "class": "com.example.brainslop.core.components.FreezeRotationComponent",
@@ -205,6 +212,13 @@
             "centered": "boolean"
         }
     },
+    "barrel": {
+        "type": "BarrelComponent",
+        "class": "com.example.brainslop.core.components.BarrelComponent",
+        "fields": {
+            "attackSpeedUp": "float"
+        }
+    },
     "model": {
         "type": "ModelComponent",
         "class": "com.example.brainslop.core.components.ModelComponent",
@@ -225,7 +239,16 @@
         "type": "MovementComponent",
         "class": "com.example.brainslop.core.components.MovementComponent",
         "fields": {
-            "movementSpeed": "float"
+            "movementSpeed": "float",
+            "moveDir": {
+                "type": "Vector3",
+                "class": "com.badlogic.gdx.math.Vector3",
+                "fields": {
+                    "x": "float",
+                    "y": "float",
+                    "z": "float"
+                }
+            }
         }
     },
     "script": {
